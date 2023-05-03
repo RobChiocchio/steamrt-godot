@@ -139,6 +139,3 @@ RUN dpkg --add-architecture i386 \
 RUN useradd "${USER}" -m -d ${HOMEDIR} \
     && su "${USER}" \
     && /usr/games/steamcmd +quit
-    
-# Switch user
-USER ${USER}
