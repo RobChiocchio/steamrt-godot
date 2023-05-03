@@ -30,7 +30,8 @@ RUN apt-get install -yqq --no-install-recommends \
     libpulse-dev \
     libudev-dev \
     libxi-dev \
-    libxrandr-dev
+    libxrandr-dev \
+    mingw-w64
     # mesa-vulkan-drivers
 
 # Download Godot editor binary
@@ -40,11 +41,11 @@ RUN wget -nv https://downloads.tuxfamily.org/godotengine/${GODOT_VERSION}/Godot_
     && mv Godot_v${GODOT_VERSION}-stable_linux.x86_64 /usr/local/bin/godot
 
 # Download Godot templates
-RUN wget -nv https://downloads.tuxfamily.org/godotengine/${GODOT_VERSION}/Godot_v${GODOT_VERSION}-stable_export_templates.tpz \
-    && unzip Godot_v${GODOT_VERSION}-stable_export_templates.tpz \
-    && rm Godot_v${GODOT_VERSION}-stable_export_templates.tpz \
-    && mkdir --parents ~/.local/share/godot/templates/${GODOT_VERSION}.stable \
-    && mv templates/* ~/.local/share/godot/templates/${GODOT_VERSION}.stable
+#RUN wget -nv https://downloads.tuxfamily.org/godotengine/${GODOT_VERSION}/Godot_v${GODOT_VERSION}-stable_export_templates.tpz \
+#    && unzip Godot_v${GODOT_VERSION}-stable_export_templates.tpz \
+#    && rm Godot_v${GODOT_VERSION}-stable_export_templates.tpz \
+#    && mkdir --parents ~/.local/share/godot/templates/${GODOT_VERSION}.stable \
+#    && mv templates/* ~/.local/share/godot/templates/${GODOT_VERSION}.stable
 
 # Download Godot source code
 RUN wget -nv https://downloads.tuxfamily.org/godotengine/${GODOT_VERSION}/godot-${GODOT_VERSION}-stable.tar.xz \
@@ -81,14 +82,23 @@ RUN scons -j$(nproc) platform=linuxbsd target=template_debug arch=x86_64 ${BUILD
 # Build Godot editor for Linux
 #RUN scons -j$(nproc) platform=linuxbsd target=editor arch=x86_64 ${BUILD_FLAGS}
 
+# Build Godot release template for Windows
+RUN scons -j$(nproc) platform=windows  target=template_release arch=x86_64
+
+# Build Godot debug template for Windows
+RUN scons -j$(nproc) platform=windows  target=template_debug arch=x86_64
+
 # Copy Godot template to user's templates folder
-RUN cp bin/godot.linuxbsd.template_release.x86_64 ~/.local/share/godot/templates/${GODOT_VERSION}.stable/ \
-    && cp bin/godot.linuxbsd.template_debug.x86_64 ~/.local/share/godot/templates/${GODOT_VERSION}.stable/
+RUN mkdir --parents ~/.local/share/godot/templates/${GODOT_VERSION}.stable \
+    && cp bin/godot.linuxbsd.template_release.x86_64 ~/.local/share/godot/templates/${GODOT_VERSION}.stable/ \
+    && cp bin/godot.linuxbsd.template_debug.x86_64 ~/.local/share/godot/templates/${GODOT_VERSION}.stable/ \
+    && cp bin/godot.windows.template_release.exe ~/.local/share/godot/templates/${GODOT_VERSION}.stable/ \
+    && cp bin/godot.windows.template_debug.exe ~/.local/share/godot/templates/${GODOT_VERSION}.stable/
 
 # Multi-stage build
-#FROM registry.gitlab.steamos.cloud/steamrt/sniper/platform:latest
-#COPY --from=build ~/.local/share/godot/templates/ ~/.local/share/godot/templates/
-#COPY --from=build /usr/local/bin/godot /usr/local/bin/godot
+FROM registry.gitlab.steamos.cloud/steamrt/sniper/platform:latest
+COPY --from=build ~/.local/share/godot/templates/ ~/.local/share/godot/templates/
+COPY --from=build /usr/local/bin/godot /usr/local/bin/godot
 
 # Insert Steam prompt answers
 RUN echo steam steam/question select "I AGREE" | debconf-set-selections \
@@ -102,4 +112,4 @@ RUN dpkg --add-architecture i386 \
     && rm -rf /var/lib/apt/lists/*
     
 # Update SteamCMD    
-#RUN steamcmd +quit
+RUN steamcmd +quit
