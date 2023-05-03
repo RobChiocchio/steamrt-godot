@@ -103,6 +103,7 @@ RUN mkdir --parents ~/.local/share/godot/templates/${GODOT_VERSION}.stable \
 
 # Multi-stage build
 FROM registry.gitlab.steamos.cloud/steamrt/sniper/platform:latest
+RUN mkdir --parents ~/.local/share/godot/templates/${GODOT_VERSION}.stable
 COPY --from=build ~/.local/share/godot/templates/ ~/.local/share/godot/templates/
 COPY --from=build /usr/local/bin/godot /usr/local/bin/godot
 
