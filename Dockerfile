@@ -135,8 +135,9 @@ RUN dpkg --add-architecture i386 \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
     
+# Create user and run SteamCMD
+RUN useradd -u "${PUID}" -m "${USER}" \
+	&& su "${USER}" -c "/usr/games/steamcmd +quit"
+    
 # Switch user
 USER ${USER}
-    
-# Update SteamCMD    
-RUN /usr/games/steamcmd +quit
