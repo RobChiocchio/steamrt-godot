@@ -118,4 +118,4 @@ RUN dpkg --add-architecture i386 \
     && rm -rf /var/lib/apt/lists/*
     
 # Update SteamCMD    
-RUN steamcmd +quit
+RUN /usr/games/steamcmd +quit
