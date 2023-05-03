@@ -1,4 +1,4 @@
-FROM registry.gitlab.steamos.cloud/steamrt/sniper/sdk:latest
+FROM registry.gitlab.steamos.cloud/steamrt/sniper/sdk:latest AS build
 
 ENV NAME=steamrt-godot
 
@@ -17,7 +17,7 @@ ARG BUILD_FLAGS="linker=mold use_lto=no builtin_libogg=no builtin_libtheora=no b
 # RUN ~/.steam/root/ubuntu12_32/steam-runtime/setup.sh
 
 # Install dependencies for Godot compile
-RUN apt-get install -yqq \
+RUN apt-get install -yqq --no-install-recommends \
     # build-essential \
     # scons \
     # pkg-config \
@@ -85,17 +85,20 @@ RUN scons -j$(nproc) platform=linuxbsd target=template_debug arch=x86_64 ${BUILD
 RUN cp bin/godot.linuxbsd.template_release.x86_64 ~/.local/share/godot/templates/${GODOT_VERSION}.stable/ \
     && cp bin/godot.linuxbsd.template_debug.x86_64 ~/.local/share/godot/templates/${GODOT_VERSION}.stable/
 
+# Multi-stage build
+#FROM registry.gitlab.steamos.cloud/steamrt/sniper/platform:latest
+#COPY --from=build ~/.local/share/godot/templates/ ~/.local/share/godot/templates/
+#COPY --from=build /usr/local/bin/godot /usr/local/bin/godot
+
 # Insert Steam prompt answers
 RUN echo steam steam/question select "I AGREE" | debconf-set-selections \
  && echo steam steam/license note "" | debconf-set-selections
 
-# Install SteamCMD
+# Install and update SteamCMD
 RUN dpkg --add-architecture i386 \
     && apt-get update -yqq \
-    && apt-get install -yqq --no-install-recommends lib32gcc-s1 steamcmd
-
-# Create symlink for SteamCMD
-RUN ln -s /usr/games/steamcmd /home/steam/steamcmd
-
-# Update SteamCMD and quit
-RUN steamcmd +quit
+    && apt-get install -yqq --no-install-recommends lib32gcc-s1 steamcmd \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/* \
+    && ln -s /usr/games/steamcmd /home/steam/steamcmd \
+    && steamcmd +quit
