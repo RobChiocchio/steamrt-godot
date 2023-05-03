@@ -117,7 +117,11 @@ ENV GODOT_VERSION=${GODOT_VERSION}
 ARG STEAMWORKS_VERSION
 ENV STEAMWORKS_VERSION=${STEAMWORKS_VERSION}
 
-COPY --from=build /root/.local/share/godot/templates/${GODOT_VERSION}.stable/ /root/.local/share/godot/templates/${GODOT_VERSION}.stable/
+ENV USER steam
+ENV HOMEDIR "/home/${USER}"
+ENV STEAMCMDDIR "${HOMEDIR}/steamcmd"
+
+COPY --from=build /root/.local/share/godot/templates/${GODOT_VERSION}.stable/ ${HOMEDIR}/.local/share/godot/templates/${GODOT_VERSION}.stable/
 COPY --from=build /usr/local/bin/godot /usr/local/bin/godot
 
 # Insert Steam prompt answers
@@ -130,6 +134,9 @@ RUN dpkg --add-architecture i386 \
     && apt-get install -yqq --no-install-recommends lib32gcc-s1 steamcmd git \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
+    
+# Switch user
+USER ${USER}
     
 # Update SteamCMD    
 RUN /usr/games/steamcmd +quit
