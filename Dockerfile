@@ -136,7 +136,7 @@ RUN dpkg --add-architecture i386 \
     && rm -rf /var/lib/apt/lists/*
     
 # Create user and run SteamCMD
-RUN useradd "${USER}" \
+RUN useradd "${USER}" -m -d ${HOMEDIR} \
     && su "${USER}" \
     && /usr/games/steamcmd +quit
     
