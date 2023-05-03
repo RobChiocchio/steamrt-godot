@@ -1,5 +1,6 @@
 FROM registry.gitlab.steamos.cloud/steamrt/sniper/sdk:latest AS build
 
+LABEL org.opencontainers.image.source=https://github.com/RobethX/steamrt-godot/
 ENV NAME=steamrt-godot
 
 # Pass Steamworks login cookie from GitHub secrets
