@@ -4,8 +4,9 @@ ENV NAME=steamrt-godot
 
 ARG GODOT_VERSION="4.0.2"
 ARG STEAMWORKS_VERSION="157"
-ARG USE_LTO="no"
 ARG DEBIAN_FRONTEND=noninteractive
+ARG BUILD_FLAGS="linker=mold use_lto=no builtin_libogg=no builtin_libtheora=no builtin_libvorbis=no builtin_libwebp=no builtin_pcre2=no"
+# builtin_freetype=no builtin_libpng=no builtin_zlib=no builtin_graphite=no builtin_harfbuzz=no
 
 # RUN add-apt-repository ppa:kisak/kisak-mesa && apt-get update
 
@@ -52,6 +53,13 @@ RUN wget -nv https://github.com/Gramps/GodotSteam/archive/refs/heads/godot4.zip 
     && unzip godot4.zip \
     && rm godot4.zip \
     && mv GodotSteam-godot4 godot/modules/godotsteam
+    
+# Download and set up mold for faster linking
+RUN export MOLD_LATEST=$(curl -L -s https://api.github.com/repos/rui314/mold/releases/latest | grep -o -E "https://(.*)mold-(.*)-x86_64-linux.tar.gz") \
+    && wget -nv ${MOLD_LATEST} \
+    && tar -xf $(echo $MOLD_LATEST | sed "s/.*\/\(.*\)/\1/") \
+    && mv $(echo $MOLD_LATEST | sed "s/.*\/\(.*\)\.tar.gz/\1/") /usr/local/share/mold \
+    && export PATH="/usr/local/share/mold/bin:$PATH"
 
 # Download Steamworks SDK
 RUN wget -nv https://partner.steamgames.com/downloads/steamworks_sdk_${STEAMWORKS_VERSION}.zip \
@@ -61,17 +69,22 @@ RUN wget -nv https://partner.steamgames.com/downloads/steamworks_sdk_${STEAMWORK
 
 WORKDIR /godot
 
-# Build Godot template for Linux
-RUN scons platform=linuxbsd target=template_release production=yes tools=no arch=x86_64 use_lto=${USE_LTO} \
-    builtin_libogg=no builtin_libtheora=no builtin_libvorbis=no builtin_libwebp=no builtin_pcre2=no 
-    # builtin_freetype=no builtin_libpng=no builtin_zlib=no builtin_graphite=no builtin_harfbuzz=no
-    
-    # builtin_embree=no builtin_enet=no builtin_freetype=no builtin_graphite=no builtin_harfbuzz=no \
-    # builtin_libogg=no builtin_libpng=no builtin_libtheora=no builtin_libvorbis=no builtin_libwebp=no \
-    # builtin_mbedtls=no builtin_miniupnpc=no builtin_pcre2=no builtin_zlib=no builtin_zstd=no
+# Build Godot release template for Linux
+RUN scons -j$(nproc) platform=linuxbsd target=template_release production=yes tools=no arch=x86_64 ${BUILD_FLAGS}
+
+# Build Godot debug template for Linux
+RUN scons -j$(nproc) platform=linuxbsd target=template_debug arch=x86_64 ${BUILD_FLAGS}
+
+# Build Godot editor for Linux
+#RUN scons -j$(nproc) platform=linuxbsd target=editor arch=x86_64 ${BUILD_FLAGS}
 
 # Copy Godot template to user's templates folder
-RUN cp bin/godot.linuxbsd.template_release.x86_64 ~/.local/share/godot/templates/${GODOT_VERSION}.stable/
+RUN cp bin/godot.linuxbsd.template_release.x86_64 ~/.local/share/godot/templates/${GODOT_VERSION}.stable/ \
+    && cp bin/godot.linuxbsd.template_debug.x86_64 ~/.local/share/godot/templates/${GODOT_VERSION}.stable/
+
+# Insert Steam prompt answers
+RUN echo steam steam/question select "I AGREE" | debconf-set-selections \
+ && echo steam steam/license note "" | debconf-set-selections
 
 # Install SteamCMD
 RUN dpkg --add-architecture i386 \
