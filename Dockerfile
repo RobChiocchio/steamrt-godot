@@ -100,5 +100,4 @@ RUN dpkg --add-architecture i386 \
     && apt-get install -yqq --no-install-recommends lib32gcc-s1 steamcmd \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* \
-    && ln -s /usr/games/steamcmd /home/steam/steamcmd \
     && steamcmd +quit
