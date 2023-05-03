@@ -19,3 +19,5 @@ jobs:
         context: .
         tags: robchio/steamrt-godot:latest
         push: true
+        build-args: |
+          "STEAMWORKS_COOKIE=${{ secrets.STEAMWORKS_COOKIE }}"
