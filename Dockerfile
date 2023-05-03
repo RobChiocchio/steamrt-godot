@@ -117,7 +117,7 @@ ENV GODOT_VERSION=${GODOT_VERSION}
 ARG STEAMWORKS_VERSION
 ENV STEAMWORKS_VERSION=${STEAMWORKS_VERSION}
 
-COPY --from=build /root/.local/share/godot/templates/${GODOT_VERSION}.stable/ ~/.local/share/godot/templates/${GODOT_VERSION}.stable/
+COPY --from=build /root/.local/share/godot/templates/${GODOT_VERSION}.stable/ /root/.local/share/godot/templates/${GODOT_VERSION}.stable/
 COPY --from=build /usr/local/bin/godot /usr/local/bin/godot
 
 # Insert Steam prompt answers
