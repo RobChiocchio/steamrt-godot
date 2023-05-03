@@ -141,8 +141,5 @@ RUN dpkg --add-architecture i386 \
     && rm -rf /var/lib/apt/lists/* \
     && ln -s /usr/games/steamcmd ${STEAMCMDDIR}
 
-# Change user
-USER ${USER}
-
 # Update SteamCMD
-RUN steamcmd +quit
+RUN ${STEAMCMDDIR} +quit
