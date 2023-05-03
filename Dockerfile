@@ -1,5 +1,6 @@
 FROM registry.gitlab.steamos.cloud/steamrt/sniper/sdk:latest AS build
 
+LABEL org.opencontainers.image.source=https://github.com/RobethX/steamrt-godot/
 ENV NAME=steamrt-godot
 
 # Pass Steamworks login cookie from GitHub secrets
@@ -82,9 +83,12 @@ RUN scons -j$(nproc) platform=linuxbsd target=template_debug arch=x86_64 ${BUILD
 # Build Godot editor for Linux
 #RUN scons -j$(nproc) platform=linuxbsd target=editor arch=x86_64 ${BUILD_FLAGS}
 
+# Configure MinGW
+RUN update-alternatives --set x86_64-w64-mingw32-gcc /usr/bin/x86_64-w64-mingw32-gcc-posix \
+    && update-alternatives --set x86_64-w64-mingw32-g++ /usr/bin/x86_64-w64-mingw32-g++-posix
+
 # Build Godot release template for Windows
-RUN update-alternatives --config x86_64-w64-mingw32-g++ \
-    && scons -j$(nproc) platform=windows  target=template_release production=yes arch=x86_64
+RUN scons -j$(nproc) platform=windows  target=template_release production=yes arch=x86_64
 
 # Build Godot debug template for Windows
 RUN scons -j$(nproc) platform=windows  target=template_debug arch=x86_64
