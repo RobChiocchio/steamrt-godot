@@ -62,8 +62,7 @@ RUN wget -nv https://github.com/Gramps/GodotSteam/archive/refs/heads/godot4.zip 
 RUN export MOLD_LATEST=$(curl -L -s https://api.github.com/repos/rui314/mold/releases/latest | grep -o -E "https://(.*)mold-(.*)-x86_64-linux.tar.gz") \
     && wget -nv ${MOLD_LATEST} \
     && tar -xf $(echo $MOLD_LATEST | sed "s/.*\/\(.*\)/\1/") \
-    && mv $(echo $MOLD_LATEST | sed "s/.*\/\(.*\)\.tar.gz/\1/") /usr/local/mold \
-    && export PATH="/usr/local/mold/bin:$PATH"
+    && rsync -a $(echo $MOLD_LATEST | sed "s/.*\/\(.*\)\.tar.gz/\1/")/ /usr/local/
 
 # Download Steamworks SDK
 RUN wget -nv --no-cookies --header "${STEAMWORKS_COOKIE}" https://partner.steamgames.com/downloads/steamworks_sdk_${STEAMWORKS_VERSION}.zip \
