@@ -29,13 +29,13 @@ RUN apt-get install -yqq \
     # mesa-vulkan-drivers
 
 # Download Godot editor binary
-RUN wget https://downloads.tuxfamily.org/godotengine/${GODOT_VERSION}/godot-${GODOT_VERSION}-stable_linux.x86_64.zip \
+RUN wget https://downloads.tuxfamily.org/godotengine/${GODOT_VERSION}/Godot_v${GODOT_VERSION}-stable_linux.x86_64.zip \
     && unzip godot-${GODOT_VERSION}-stable_linux.x86_64.zip \
     && rm godot-${GODOT_VERSION}-stable_linux.x86_64.zip \
     && mv godot-${GODOT_VERSION}-stable_linux.x86_64 /usr/local/bin/godot
 
 # Download Godot templates
-RUN wget https://downloads.tuxfamily.org/godotengine/${GODOT_VERSION}/godot-${GODOT_VERSION}-stable_export_templates.tpz \
+RUN wget https://downloads.tuxfamily.org/godotengine/${GODOT_VERSION}/Godot_v${GODOT_VERSION}-stable_export_templates.tpz \
     && unzip godot-${GODOT_VERSION}-stable_export_templates.tpz \
     && rm godot-${GODOT_VERSION}-stable_export_templates.tpz \
     && mv templates/* ~/.local/share/godot/templates/${GODOT_VERSION}.stable
