@@ -138,10 +138,11 @@ RUN dpkg --add-architecture i386 \
     && apt-get update -yqq \
     && apt-get install -yqq --no-install-recommends lib32gcc-s1 steamcmd git \
     && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
+    && rm -rf /var/lib/apt/lists/* \
+    && ln -s /usr/games/steamcmd ${STEAMCMDDIR}
 
 # Change user
 USER ${USER}
 
 # Update SteamCMD
-RUN /usr/games/steamcmd +quit
+RUN steamcmd +quit
