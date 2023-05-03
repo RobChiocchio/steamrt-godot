@@ -103,7 +103,9 @@ RUN mkdir --parents ~/.local/share/godot/templates/${GODOT_VERSION}.stable \
 
 # Multi-stage build
 FROM registry.gitlab.steamos.cloud/steamrt/sniper/platform:latest
-COPY --from=build /root/.local/share/godot/templates/${GODOT_VERSION}.stable/ ~/.local/share/godot/templates/
+ARG GODOT_VERSION
+ARG STEAMWORKS_VERSION
+COPY --from=build /root/.local/share/godot/templates/${GODOT_VERSION}.stable/ ~/.local/share/godot/templates/${GODOT_VERSION}.stable/
 COPY --from=build /usr/local/bin/godot /usr/local/bin/godot
 
 # Insert Steam prompt answers
