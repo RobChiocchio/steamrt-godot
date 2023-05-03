@@ -86,9 +86,9 @@ RUN cp bin/godot.linuxbsd.template_release.x86_64 ~/.local/share/godot/templates
     && cp bin/godot.linuxbsd.template_debug.x86_64 ~/.local/share/godot/templates/${GODOT_VERSION}.stable/
 
 # Multi-stage build
-FROM registry.gitlab.steamos.cloud/steamrt/sniper/platform:latest
-COPY --from=build ~/.local/share/godot/templates/ ~/.local/share/godot/templates/
-COPY --from=build /usr/local/bin/godot /usr/local/bin/godot
+#FROM registry.gitlab.steamos.cloud/steamrt/sniper/platform:latest
+#COPY --from=build ~/.local/share/godot/templates/ ~/.local/share/godot/templates/
+#COPY --from=build /usr/local/bin/godot /usr/local/bin/godot
 
 # Insert Steam prompt answers
 RUN echo steam steam/question select "I AGREE" | debconf-set-selections \
