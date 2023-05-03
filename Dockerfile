@@ -1,3 +1,6 @@
+ARG GODOT_VERSION="4.0.2"
+ARG STEAMWORKS_VERSION="157"
+
 FROM registry.gitlab.steamos.cloud/steamrt/sniper/sdk:latest AS build
 
 ENV NAME=steamrt-godot
@@ -7,10 +10,10 @@ LABEL org.opencontainers.image.source=https://github.com/RobethX/steamrt-godot/
 ARG STEAMWORKS_COOKIE
 ENV STEAMWORKS_COOKIE ${STEAMWORKS_COOKIE}
 
-ARG GODOT_VERSION="4.0.2"
+ARG GODOT_VERSION
 ENV GODOT_VERSION=${GODOT_VERSION}
 
-ARG STEAMWORKS_VERSION="157"
+ARG STEAMWORKS_VERSION
 ENV STEAMWORKS_VERSION=${STEAMWORKS_VERSION}
 
 ARG DEBIAN_FRONTEND=noninteractive
@@ -107,6 +110,13 @@ RUN mkdir --parents ~/.local/share/godot/templates/${GODOT_VERSION}.stable \
 
 # Multi-stage build
 FROM registry.gitlab.steamos.cloud/steamrt/sniper/platform:latest
+
+ARG GODOT_VERSION
+ENV GODOT_VERSION=${GODOT_VERSION}
+
+ARG STEAMWORKS_VERSION
+ENV STEAMWORKS_VERSION=${STEAMWORKS_VERSION}
+
 COPY --from=build /root/.local/share/godot/templates/${GODOT_VERSION}.stable/ ~/.local/share/godot/templates/${GODOT_VERSION}.stable/
 COPY --from=build /usr/local/bin/godot /usr/local/bin/godot
 
