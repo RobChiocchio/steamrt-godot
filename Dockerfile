@@ -2,6 +2,10 @@ FROM registry.gitlab.steamos.cloud/steamrt/sniper/sdk:latest
 
 ENV NAME=steamrt-godot
 
+# Pass Steamworks login cookie from GitHub secrets
+ARG STEAMWORKS_COOKIE
+ENV STEAMWORKS_COOKIE ${STEAMWORKS_COOKIE}
+
 ARG GODOT_VERSION="4.0.2"
 ARG STEAMWORKS_VERSION="157"
 ARG DEBIAN_FRONTEND=noninteractive
@@ -62,7 +66,7 @@ RUN export MOLD_LATEST=$(curl -L -s https://api.github.com/repos/rui314/mold/rel
     && export PATH="/usr/local/share/mold/bin:$PATH"
 
 # Download Steamworks SDK
-RUN wget -nv https://partner.steamgames.com/downloads/steamworks_sdk_${STEAMWORKS_VERSION}.zip \
+RUN wget -nv --no-cookies --header "${STEAMWORKS_COOKIE}" https://partner.steamgames.com/downloads/steamworks_sdk_${STEAMWORKS_VERSION}.zip \
     && unzip steamworks_sdk_${STEAMWORKS_VERSION}.zip \
     && rm steamworks_sdk_${STEAMWORKS_VERSION}.zip \
     && mv sdk/* godot/modules/godotsteam/sdk/
