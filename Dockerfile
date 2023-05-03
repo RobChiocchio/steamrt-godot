@@ -121,6 +121,9 @@ ENV USER steam
 ENV HOMEDIR "/home/${USER}"
 ENV STEAMCMDDIR "${HOMEDIR}/steamcmd"
 
+# Create user
+RUN useradd -d ${HOMEDIR} -m "${USER}"
+
 WORKDIR ${HOMEDIR}
 
 COPY --from=build /root/.local/share/godot/templates/${GODOT_VERSION}.stable/ ${HOMEDIR}/.local/share/godot/templates/${GODOT_VERSION}.stable/
@@ -136,9 +139,6 @@ RUN dpkg --add-architecture i386 \
     && apt-get install -yqq --no-install-recommends lib32gcc-s1 steamcmd git \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
-    
-# Create user and run SteamCMD
-RUN useradd -d ${HOMEDIR} -m "${USER}"
 
 # Change user
 USER ${USER}
