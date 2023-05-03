@@ -29,31 +29,32 @@ RUN apt-get install -yqq \
     # mesa-vulkan-drivers
 
 # Download Godot editor binary
-RUN wget https://downloads.tuxfamily.org/godotengine/${GODOT_VERSION}/Godot_v${GODOT_VERSION}-stable_linux.x86_64.zip \
+RUN wget -nv https://downloads.tuxfamily.org/godotengine/${GODOT_VERSION}/Godot_v${GODOT_VERSION}-stable_linux.x86_64.zip \
     && unzip Godot_v${GODOT_VERSION}-stable_linux.x86_64.zip \
     && rm Godot_v${GODOT_VERSION}-stable_linux.x86_64.zip \
     && mv Godot_v${GODOT_VERSION}-stable_linux.x86_64 /usr/local/bin/godot
 
 # Download Godot templates
-RUN wget https://downloads.tuxfamily.org/godotengine/${GODOT_VERSION}/Godot_v${GODOT_VERSION}-stable_export_templates.tpz \
+RUN wget -nv https://downloads.tuxfamily.org/godotengine/${GODOT_VERSION}/Godot_v${GODOT_VERSION}-stable_export_templates.tpz \
     && unzip Godot_v${GODOT_VERSION}-stable_export_templates.tpz \
     && rm Godot_v${GODOT_VERSION}-stable_export_templates.tpz \
+    && mkdir --parents ~/.local/share/godot/templates/${GODOT_VERSION}.stable \
     && mv templates/* ~/.local/share/godot/templates/${GODOT_VERSION}.stable
 
 # Download Godot source code
-RUN wget https://downloads.tuxfamily.org/godotengine/${GODOT_VERSION}/godot-${GODOT_VERSION}-stable.tar.xz \
+RUN wget -nv https://downloads.tuxfamily.org/godotengine/${GODOT_VERSION}/godot-${GODOT_VERSION}-stable.tar.xz \
     && tar -xf godot-${GODOT_VERSION}-stable.tar.xz \
     && rm godot-${GODOT_VERSION}-stable.tar.xz \
     && mv godot-${GODOT_VERSION}-stable godot
 
 # Download GodotSteam module
-RUN wget https://github.com/Gramps/GodotSteam/archive/refs/heads/godot4.zip \
+RUN wget -nv https://github.com/Gramps/GodotSteam/archive/refs/heads/godot4.zip \
     && unzip godot4.zip \
     && rm godot4.zip \
     && mv GodotSteam-godot4 godot/modules/godotsteam
 
 # Download Steamworks SDK
-RUN wget https://partner.steamgames.com/downloads/steamworks_sdk_${STEAMWORKS_VERSION}.zip \
+RUN wget -nv https://partner.steamgames.com/downloads/steamworks_sdk_${STEAMWORKS_VERSION}.zip \
     && unzip steamworks_sdk_${STEAMWORKS_VERSION}.zip \
     && rm steamworks_sdk_${STEAMWORKS_VERSION}.zip \
     && mv sdk/* godot/modules/godotsteam/sdk/
