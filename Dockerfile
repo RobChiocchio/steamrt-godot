@@ -94,10 +94,12 @@ RUN cp bin/godot.linuxbsd.template_release.x86_64 ~/.local/share/godot/templates
 RUN echo steam steam/question select "I AGREE" | debconf-set-selections \
  && echo steam steam/license note "" | debconf-set-selections
 
-# Install and update SteamCMD
+# Install SteamCMD
 RUN dpkg --add-architecture i386 \
     && apt-get update -yqq \
     && apt-get install -yqq --no-install-recommends lib32gcc-s1 steamcmd \
     && apt-get clean \
-    && rm -rf /var/lib/apt/lists/* \
-    && steamcmd +quit
+    && rm -rf /var/lib/apt/lists/*
+    
+# Update SteamCMD    
+#RUN steamcmd +quit
