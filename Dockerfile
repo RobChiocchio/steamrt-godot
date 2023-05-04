@@ -102,6 +102,9 @@ RUN scons -j$(nproc) platform=windows  target=template_debug arch=x86_64
 
 # Copy Godot template to user's templates folder
 RUN mkdir --parents ~/.local/share/godot/templates/${GODOT_VERSION}.stable \
+    && cp modules/godotsteam/sdk/redistributable_bin/win64/steam_api64.dll bin/ \
+    && cp modules/godotsteam/sdk/redistributable_bin/linux64/libsteam_api.so bin/ \
+    && cp modules/godotsteam/sdk/redistributable_bin/osx/libsteam_api.dylib bin/ \
     && mv bin/* ~/.local/share/godot/templates/${GODOT_VERSION}.stable/
     #&& cp bin/godot.linuxbsd.template_release.x86_64 ~/.local/share/godot/templates/${GODOT_VERSION}.stable/ \
     #&& cp bin/godot.linuxbsd.template_debug.x86_64 ~/.local/share/godot/templates/${GODOT_VERSION}.stable/ \
