@@ -72,6 +72,12 @@ RUN export MOLD_LATEST=$(curl -L -s https://api.github.com/repos/rui314/mold/rel
     && wget -nv ${MOLD_LATEST} \
     && tar -xf $(echo $MOLD_LATEST | sed "s/.*\/\(.*\)/\1/") \
     && rsync -a $(echo $MOLD_LATEST | sed "s/.*\/\(.*\)\.tar.gz/\1/")/ /usr/local/
+    
+# Donload and set up Pyston for potentially faster compilation
+RUN export PYSTON_LATEST=$(curl -L -s https://api.github.com/repos/pyston/pyston/releases/latest | grep -o -E "https://(.*)pyston_(.*)_portable_amd64.tar.gz") \
+    && wget -nv ${PYSTON_LATEST} \
+    && tar -xf $(echo $PYSTON_LATEST | sed "s/.*\/\(.*\)/\1/") \
+    && rsync -a $(echo $PYSTON_LATEST | sed "s/.*\/\(.*\)\.tar.gz/\1/")/ /usr/local/
 
 # Download Steamworks SDK
 RUN wget -nv --no-cookies --header "${STEAMWORKS_COOKIE}" https://partner.steamgames.com/downloads/steamworks_sdk_${STEAMWORKS_VERSION}.zip \
