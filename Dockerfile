@@ -108,15 +108,19 @@ RUN scons -j$(nproc) platform=windows target=editor production=yes tools=yes arc
 
 # Copy Godot template to user's templates folder
 RUN mkdir --parents ~/.local/share/godot/templates/${GODOT_VERSION}.stable \
+    && mv bin/godot.linuxbsd.template_release.x86_64 ~/.local/share/godot/templates/${GODOT_VERSION}.stable/linux_release.x86_64 \
+    && mv bin/godot.linuxbsd.template_debug.x86_64 ~/.local/share/godot/templates/${GODOT_VERSION}.stable/linux_debug.x86_64 \
+    && mv bin/godot.linuxbsd.editor.x86_64 ~/.local/share/godot/templates/${GODOT_VERSION}.stable/linux_editor.x86_64 \
+    && mv bin/godot.windows.template_release.x86_64.exe ~/.local/share/godot/templates/${GODOT_VERSION}.stable/windows_release_x86_64.exe \
+    && mv bin/godot.windows.template_release.x86_64.console.exe ~/.local/share/godot/templates/${GODOT_VERSION}.stable/windows_release_x86_64_console.exe \
+    && mv bin/godot.windows.template_debug.x86_64.exe ~/.local/share/godot/templates/${GODOT_VERSION}.stable/windows_debug_x86_64.exe \
+    && mv bin/godot.windows.template_debug.x86_64.console.exe ~/.local/share/godot/templates/${GODOT_VERSION}.stable/windows_debug_x86_64_console.exe \
+    && mv bin/godot.windows.editor.x86_64.exe ~/.local/share/godot/templates/${GODOT_VERSION}.stable/windows_editor_x86_64.exe \
+    && mv bin/godot.windows.editor.x86_64.console.exe ~/.local/share/godot/templates/${GODOT_VERSION}.stable/windows_editor_x86_64_console.exe \
     && cp modules/godotsteam/sdk/redistributable_bin/win64/steam_api64.dll bin/ \
     && cp modules/godotsteam/sdk/redistributable_bin/linux64/libsteam_api.so bin/ \
     && cp modules/godotsteam/sdk/redistributable_bin/osx/libsteam_api.dylib bin/ \
     && mv bin/* ~/.local/share/godot/templates/${GODOT_VERSION}.stable/
-    #&& cp bin/godot.linuxbsd.template_release.x86_64 ~/.local/share/godot/templates/${GODOT_VERSION}.stable/ \
-    #&& cp bin/godot.linuxbsd.template_debug.x86_64 ~/.local/share/godot/templates/${GODOT_VERSION}.stable/ \
-    #&& cp bin/godot.windows.template_release.x86_64.exe ~/.local/share/godot/templates/${GODOT_VERSION}.stable/ \
-    #&& cp bin/godot.windows.template_debug.x86_64.exe ~/.local/share/godot/templates/${GODOT_VERSION}.stable/ \
-    #&& ls bin
 
 # Multi-stage build
 FROM registry.gitlab.steamos.cloud/steamrt/sniper/platform:latest
