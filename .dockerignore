@@ -1,0 +1,17 @@
+# Common
+README.md
+CHANGELOG.md
+docker-compose.yml
+Dockerfile
+
+# Git
+.git
+.gitattributes
+.gitignore
+.github
+
+# Godot
+.godot
+
+# VSCode
+.vscode
