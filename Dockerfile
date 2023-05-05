@@ -39,7 +39,8 @@ RUN apt-get install -yqq --no-install-recommends \
     libudev-dev \
     libxi-dev \
     libxrandr-dev \
-    mingw-w64
+    mingw-w64 \
+    && rm -rf /var/lib/apt/lists/*
     # mesa-vulkan-drivers
 
 # Download Godot editor binary
