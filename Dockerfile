@@ -17,10 +17,10 @@ ARG STEAMWORKS_VERSION
 ENV STEAMWORKS_VERSION=${STEAMWORKS_VERSION}
 
 ARG DEBIAN_FRONTEND=noninteractive
-ARG BUILD_FLAGS="linker=mold use_lto=no builtin_libogg=no builtin_libtheora=no builtin_libvorbis=no builtin_libwebp=no builtin_pcre2=no"
-# builtin_freetype=no builtin_libpng=no builtin_zlib=no builtin_graphite=no builtin_harfbuzz=no
+ARG BUILD_FLAGS="linker=mold use_lto=no builtin_libogg=no builtin_libtheora=no builtin_libvorbis=no builtin_libwebp=no builtin_pcre2=no \ 
+                 builtin_freetype=no builtin_libpng=no builtin_zlib=no builtin_graphite=no builtin_harfbuzz=no"
 
-# RUN add-apt-repository ppa:kisak/kisak-mesa && apt-get update
+RUN add-apt-repository ppa:kisak/kisak-mesa && apt-get update
 
 # RUN ~/.steam/root/ubuntu12_32/steam-runtime/setup.sh
 
@@ -40,8 +40,8 @@ RUN apt-get install -yqq --no-install-recommends \
     libxi-dev \
     libxrandr-dev \
     mingw-w64 \
+    mesa-vulkan-drivers \
     && rm -rf /var/lib/apt/lists/*
-    # mesa-vulkan-drivers
 
 # Download Godot editor binary
 RUN wget -nv https://downloads.tuxfamily.org/godotengine/${GODOT_VERSION}/Godot_v${GODOT_VERSION}-stable_linux.x86_64.zip \
