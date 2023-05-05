@@ -63,9 +63,10 @@ RUN wget -nv https://github.com/Gramps/GodotSteam/archive/refs/heads/godot4.zip 
     
 # Download and set up mold for faster linking
 RUN export MOLD_LATEST=$(curl -L -s https://api.github.com/repos/rui314/mold/releases/latest | grep -o -E "https://(.*)mold-(.*)-x86_64-linux.tar.gz") \
-    && wget -nv ${MOLD_LATEST} \
-    && tar -xf $(echo $MOLD_LATEST | sed "s/.*\/\(.*\)/\1/") \
-    && rsync -a $(echo $MOLD_LATEST | sed "s/.*\/\(.*\)\.tar.gz/\1/")/ /usr/local/
+    && curl -L -o mold.tar.gz ${MOLD_LATEST} \
+    && tar -xf mold.tar.gz \
+    && rsync -a mold*/ /usr/local/ \
+    && rm -rf mold*
 
 # Download Steamworks SDK
 RUN wget -nv --no-cookies --header "${STEAMWORKS_COOKIE}" https://partner.steamgames.com/downloads/steamworks_sdk_${STEAMWORKS_VERSION}.zip \
