@@ -72,10 +72,12 @@ RUN export MOLD_LATEST=$(curl -L -s https://api.github.com/repos/rui314/mold/rel
     && rm -rf mold*
 
 # Download Steamworks SDK
-RUN wget -nv --no-cookies --header "${STEAMWORKS_COOKIE}" https://partner.steamgames.com/downloads/steamworks_sdk_${STEAMWORKS_VERSION}.zip \
-    && unzip steamworks_sdk_${STEAMWORKS_VERSION}.zip \
-    && rm steamworks_sdk_${STEAMWORKS_VERSION}.zip \
-    && mv sdk/* godot/modules/godotsteam/sdk/
+#RUN wget -nv --no-cookies --header "${STEAMWORKS_COOKIE}" https://partner.steamgames.com/downloads/steamworks_sdk_${STEAMWORKS_VERSION}.zip \
+#    && unzip steamworks_sdk_${STEAMWORKS_VERSION}.zip \
+#    && rm steamworks_sdk_${STEAMWORKS_VERSION}.zip \
+#    && mv sdk/* godot/modules/godotsteam/sdk/
+
+COPY steamworks-sdk-mirror/sdk/ godot/modules/godotsteam/sdk/
 
 WORKDIR /godot
 
