@@ -32,7 +32,7 @@ jobs:
         context: .
         tags: robchio/steamrt-godot:latest
         push: true
-        cache-from: type=gha
-        cache-to: type=gha,mode=max
+        #cache-from: type=gha
+        #cache-to: type=gha,mode=max
         build-args: |
           "STEAMWORKS_COOKIE=${{ secrets.STEAMWORKS_COOKIE }}"
