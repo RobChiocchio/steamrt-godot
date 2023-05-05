@@ -61,9 +61,6 @@ RUN wget -nv https://github.com/Gramps/GodotSteam/archive/refs/heads/godot4.zip 
     && rm godot4.zip \
     && mv GodotSteam-godot4 godot/modules/godotsteam
 
-# Pass build options
-COPY custom.py godot/custom.py
-    
 # Download and set up mold for faster linking
 RUN export MOLD_LATEST=$(curl -L -s https://api.github.com/repos/rui314/mold/releases/latest | grep -o -E "https://(.*)mold-(.*)-x86_64-linux.tar.gz") \
     && curl -L -o mold.tar.gz ${MOLD_LATEST} \
@@ -71,13 +68,16 @@ RUN export MOLD_LATEST=$(curl -L -s https://api.github.com/repos/rui314/mold/rel
     && rsync -a mold*/ /usr/local/ \
     && rm -rf mold*
 
+# Pass build options
+COPY custom.py godot/custom.py
+
 # Download Steamworks SDK
 #RUN wget -nv --no-cookies --header "${STEAMWORKS_COOKIE}" https://partner.steamgames.com/downloads/steamworks_sdk_${STEAMWORKS_VERSION}.zip \
 #    && unzip steamworks_sdk_${STEAMWORKS_VERSION}.zip \
 #    && rm steamworks_sdk_${STEAMWORKS_VERSION}.zip \
 #    && mv sdk/* godot/modules/godotsteam/sdk/
 
-COPY steamworks-sdk-mirror/sdk/ godot/modules/godotsteam/sdk/
+COPY sdk/ godot/modules/godotsteam/sdk/
 
 WORKDIR /godot
 
