@@ -1,0 +1,3 @@
+[submodule "steamworks-sdk-mirror"]
+	path = steamworks-sdk-mirror
+	url = https://github.com/RobethX/steamworks-sdk-mirror.git
