@@ -60,6 +60,9 @@ RUN wget -nv https://github.com/Gramps/GodotSteam/archive/refs/heads/godot4.zip 
     && unzip godot4.zip \
     && rm godot4.zip \
     && mv GodotSteam-godot4 godot/modules/godotsteam
+
+# Pass build options
+COPY custom.py godot/custom.py
     
 # Download and set up mold for faster linking
 RUN export MOLD_LATEST=$(curl -L -s https://api.github.com/repos/rui314/mold/releases/latest | grep -o -E "https://(.*)mold-(.*)-x86_64-linux.tar.gz") \
