@@ -20,8 +20,6 @@ ARG DEBIAN_FRONTEND=noninteractive
 ARG BUILD_FLAGS="linker=mold use_lto=no builtin_libogg=no builtin_libtheora=no builtin_libvorbis=no builtin_libwebp=no builtin_pcre2=no \ 
                  builtin_freetype=no builtin_libpng=no builtin_zlib=no builtin_graphite=no builtin_harfbuzz=no"
 
-RUN add-apt-repository ppa:kisak/kisak-mesa && apt-get update
-
 # RUN ~/.steam/root/ubuntu12_32/steam-runtime/setup.sh
 
 # Install dependencies for Godot compile
@@ -40,7 +38,6 @@ RUN apt-get install -yqq --no-install-recommends \
     libxi-dev \
     libxrandr-dev \
     mingw-w64 \
-    mesa-vulkan-drivers \
     && rm -rf /var/lib/apt/lists/*
 
 # Download Godot editor binary
