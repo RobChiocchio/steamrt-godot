@@ -28,7 +28,7 @@ jobs:
 
     - name: Get tag name
       id: get_ref
-      run: echo ::set-output name=tag::${GITHUB_REF_NAME//\//_}
+      run: echo "tag=${GITHUB_REF_NAME//\//_}" >> $GITHUB_OUTPUT
 
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v2
