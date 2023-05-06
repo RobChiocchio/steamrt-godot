@@ -41,10 +41,10 @@ RUN apt-get install -yqq --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 # Download Godot editor binary
-RUN wget -nv https://downloads.tuxfamily.org/godotengine/${GODOT_VERSION}/Godot_v${GODOT_VERSION}-stable_linux.x86_64.zip \
-    && unzip Godot_v${GODOT_VERSION}-stable_linux.x86_64.zip \
-    && rm Godot_v${GODOT_VERSION}-stable_linux.x86_64.zip \
-    && mv Godot_v${GODOT_VERSION}-stable_linux.x86_64 /usr/local/bin/godot
+#RUN wget -nv https://downloads.tuxfamily.org/godotengine/${GODOT_VERSION}/Godot_v${GODOT_VERSION}-stable_linux.x86_64.zip \
+#    && unzip Godot_v${GODOT_VERSION}-stable_linux.x86_64.zip \
+#    && rm Godot_v${GODOT_VERSION}-stable_linux.x86_64.zip \
+#    && mv Godot_v${GODOT_VERSION}-stable_linux.x86_64 /usr/local/bin/godot
 
 # Download Godot templates
 #RUN wget -nv https://downloads.tuxfamily.org/godotengine/${GODOT_VERSION}/Godot_v${GODOT_VERSION}-stable_export_templates.tpz \
@@ -111,7 +111,8 @@ RUN scons -j$(nproc) platform=windows target=editor production=yes tools=yes arc
 RUN mkdir --parents ~/.local/share/godot/templates/${GODOT_VERSION}.stable \
     && mv bin/godot.linuxbsd.template_release.x86_64 ~/.local/share/godot/templates/${GODOT_VERSION}.stable/linux_release.x86_64 \
     && mv bin/godot.linuxbsd.template_debug.x86_64 ~/.local/share/godot/templates/${GODOT_VERSION}.stable/linux_debug.x86_64 \
-    && mv bin/godot.linuxbsd.editor.x86_64 ~/.local/share/godot/templates/${GODOT_VERSION}.stable/linux_editor.x86_64 \
+#   && mv bin/godot.linuxbsd.editor.x86_64 ~/.local/share/godot/templates/${GODOT_VERSION}.stable/linux_editor.x86_64 \
+    && mv bin/godot.linuxbsd.editor.x86_64 /usr/local/bin/godot \
     && mv bin/godot.windows.template_release.x86_64.exe ~/.local/share/godot/templates/${GODOT_VERSION}.stable/windows_release_x86_64.exe \
     && mv bin/godot.windows.template_release.x86_64.console.exe ~/.local/share/godot/templates/${GODOT_VERSION}.stable/windows_release_x86_64_console.exe \
     && mv bin/godot.windows.template_debug.x86_64.exe ~/.local/share/godot/templates/${GODOT_VERSION}.stable/windows_debug_x86_64.exe \
