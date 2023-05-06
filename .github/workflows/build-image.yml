@@ -39,7 +39,9 @@ jobs:
       uses: docker/build-push-action@v4
       with:
         context: .
-        tags: robchio/steamrt-godot:latest
+        tags: |
+          ${{ secrets.DOCKERHUB_USERNAME }}/steamrt-godot:latest
+          ${{ secrets.DOCKERHUB_USERNAME }}/steamrt-godot:${{ github.ref_name }}
         push: true
         cache-from: type=gha
         cache-to: type=gha,mode=max
