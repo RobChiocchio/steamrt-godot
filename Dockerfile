@@ -46,6 +46,13 @@ RUN wget -nv https://downloads.tuxfamily.org/godotengine/${GODOT_VERSION}/Godot_
     && rm Godot_v${GODOT_VERSION}-stable_linux.x86_64.zip \
     && mv Godot_v${GODOT_VERSION}-stable_linux.x86_64 /usr/local/bin/godot
 
+# Download Godot templates
+#RUN wget -nv https://downloads.tuxfamily.org/godotengine/${GODOT_VERSION}/Godot_v${GODOT_VERSION}-stable_export_templates.tpz \
+#    && unzip Godot_v${GODOT_VERSION}-stable_export_templates.tpz \
+#    && rm Godot_v${GODOT_VERSION}-stable_export_templates.tpz \
+#    && mkdir --parents ~/.local/share/godot/templates/${GODOT_VERSION}.stable \
+#    && mv templates/* ~/.local/share/godot/templates/${GODOT_VERSION}.stable
+
 # Download Godot source code
 RUN wget -nv https://downloads.tuxfamily.org/godotengine/${GODOT_VERSION}/godot-${GODOT_VERSION}-stable.tar.xz \
     && tar -xf godot-${GODOT_VERSION}-stable.tar.xz \
