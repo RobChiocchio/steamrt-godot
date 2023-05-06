@@ -37,7 +37,7 @@ RUN apt-get install -yqq --no-install-recommends \
     libudev-dev \
     libxi-dev \
     libxrandr-dev \
-    mingw-w64 \
+    #mingw-w64 \
     && rm -rf /var/lib/apt/lists/*
 
 # Download Godot editor binary
@@ -95,32 +95,32 @@ RUN scons -j$(nproc) platform=linuxbsd target=template_debug arch=x86_64 ${BUILD
 RUN scons -j$(nproc) platform=linuxbsd target=editor arch=x86_64 ${BUILD_FLAGS}
 
 # Configure MinGW
-RUN update-alternatives --set x86_64-w64-mingw32-gcc /usr/bin/x86_64-w64-mingw32-gcc-posix \
-    && update-alternatives --set x86_64-w64-mingw32-g++ /usr/bin/x86_64-w64-mingw32-g++-posix
+# RUN update-alternatives --set x86_64-w64-mingw32-gcc /usr/bin/x86_64-w64-mingw32-gcc-posix \
+#     && update-alternatives --set x86_64-w64-mingw32-g++ /usr/bin/x86_64-w64-mingw32-g++-posix
 
 # Build Godot release template for Windows
-RUN scons -j$(nproc) platform=windows  target=template_release production=yes arch=x86_64
+# RUN scons -j$(nproc) platform=windows  target=template_release production=yes arch=x86_64
 
 # Build Godot debug template for Windows
-RUN scons -j$(nproc) platform=windows  target=template_debug arch=x86_64
+# RUN scons -j$(nproc) platform=windows  target=template_debug arch=x86_64
 
 # Build Godot editor for Windows
-RUN scons -j$(nproc) platform=windows target=editor production=yes tools=yes arch=x86_64
+# RUN scons -j$(nproc) platform=windows target=editor production=yes tools=yes arch=x86_64
 
 # Copy Godot template to user's templates folder
 RUN mkdir --parents ~/.local/share/godot/templates/${GODOT_VERSION}.stable \
     && mv bin/godot.linuxbsd.template_release.x86_64 ~/.local/share/godot/templates/${GODOT_VERSION}.stable/linux_release.x86_64 \
     && mv bin/godot.linuxbsd.template_debug.x86_64 ~/.local/share/godot/templates/${GODOT_VERSION}.stable/linux_debug.x86_64 \
-    && mv bin/godot.linuxbsd.editor.x86_64 ~/.local/share/godot/templates/${GODOT_VERSION}.stable/linux_editor.x86_64 \
-    && mv bin/godot.windows.template_release.x86_64.exe ~/.local/share/godot/templates/${GODOT_VERSION}.stable/windows_release_x86_64.exe \
-    && mv bin/godot.windows.template_release.x86_64.console.exe ~/.local/share/godot/templates/${GODOT_VERSION}.stable/windows_release_x86_64_console.exe \
-    && mv bin/godot.windows.template_debug.x86_64.exe ~/.local/share/godot/templates/${GODOT_VERSION}.stable/windows_debug_x86_64.exe \
-    && mv bin/godot.windows.template_debug.x86_64.console.exe ~/.local/share/godot/templates/${GODOT_VERSION}.stable/windows_debug_x86_64_console.exe \
-    && mv bin/godot.windows.editor.x86_64.exe ~/.local/share/godot/templates/${GODOT_VERSION}.stable/windows_editor_x86_64.exe \
-    && mv bin/godot.windows.editor.x86_64.console.exe ~/.local/share/godot/templates/${GODOT_VERSION}.stable/windows_editor_x86_64_console.exe \
     && cp modules/godotsteam/sdk/redistributable_bin/win64/steam_api64.dll bin/ \
     && cp modules/godotsteam/sdk/redistributable_bin/linux64/libsteam_api.so bin/ \
     && cp modules/godotsteam/sdk/redistributable_bin/osx/libsteam_api.dylib bin/ \
+    && mv bin/godot.linuxbsd.editor.x86_64 /usr/local/bin/godot \
+    # && mv bin/godot.windows.template_release.x86_64.exe ~/.local/share/godot/templates/${GODOT_VERSION}.stable/windows_release_x86_64.exe \
+    # && mv bin/godot.windows.template_release.x86_64.console.exe ~/.local/share/godot/templates/${GODOT_VERSION}.stable/windows_release_x86_64_console.exe \
+    # && mv bin/godot.windows.template_debug.x86_64.exe ~/.local/share/godot/templates/${GODOT_VERSION}.stable/windows_debug_x86_64.exe \
+    # && mv bin/godot.windows.template_debug.x86_64.console.exe ~/.local/share/godot/templates/${GODOT_VERSION}.stable/windows_debug_x86_64_console.exe \
+    # && mv bin/godot.windows.editor.x86_64.exe ~/.local/share/godot/templates/${GODOT_VERSION}.stable/windows_editor_x86_64.exe \
+    # && mv bin/godot.windows.editor.x86_64.console.exe ~/.local/share/godot/templates/${GODOT_VERSION}.stable/windows_editor_x86_64_console.exe \
     && mv bin/* ~/.local/share/godot/templates/${GODOT_VERSION}.stable/
 
 # Multi-stage build
