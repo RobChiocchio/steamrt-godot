@@ -48,6 +48,6 @@ jobs:
           ${{ secrets.DOCKERHUB_USERNAME }}/steamrt-godot:${{ steps.get_ref.outputs.tag }}
         push: true
         cache-from: type=gha
-        cache-to: type=gha,mode=max
+        cache-to: type=gha,mode=max,ignore-error=true
         build-args: |
           "STEAMWORKS_COOKIE=${{ secrets.STEAMWORKS_COOKIE }}"
