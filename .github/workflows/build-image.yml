@@ -26,6 +26,10 @@ jobs:
       with:
         ref: ${{ github.ref }}
 
+    - name: Get tag name
+      id: get_ref
+      run: echo ::set-output name=tag::${GITHUB_REF_NAME//\//_}
+
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v2
 
@@ -41,7 +45,7 @@ jobs:
         context: .
         tags: |
           ${{ secrets.DOCKERHUB_USERNAME }}/steamrt-godot:latest
-          ${{ secrets.DOCKERHUB_USERNAME }}/steamrt-godot:${GITHUB_REF_NAME//\//_}
+          ${{ secrets.DOCKERHUB_USERNAME }}/steamrt-godot:${{ steps.get_ref.outputs.tag }}
         push: true
         cache-from: type=gha
         cache-to: type=gha,mode=max
