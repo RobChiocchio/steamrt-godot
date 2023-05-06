@@ -6,6 +6,15 @@ on:
       - "main"
     paths:
       - "**Dockerfile"
+  pull_request_target:
+    branches: 
+      - "main"
+    types:
+      - opened
+    #   - synchronize
+    #   - reopened
+    # paths:
+    #   - "**Dockerfile"
   workflow_dispatch:
 
 jobs:
