@@ -41,7 +41,7 @@ jobs:
         context: .
         tags: |
           ${{ secrets.DOCKERHUB_USERNAME }}/steamrt-godot:latest
-          ${{ secrets.DOCKERHUB_USERNAME }}/steamrt-godot:${{ github.ref_name }}
+          ${{ secrets.DOCKERHUB_USERNAME }}/steamrt-godot:${{ github.ref_name//\//- }}
         push: true
         cache-from: type=gha
         cache-to: type=gha,mode=max
