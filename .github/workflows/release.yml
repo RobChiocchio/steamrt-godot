@@ -16,7 +16,7 @@ jobs:
         echo "file_name=${FILE_NAME}" >> "$GITHUB_ENV"
         
     - name: Compress files
-      run: tar -czvf ${{ env.file_name }} /.local/share/godot/templates/${GODOT_VERSION}.stable/
+      run: tar -czvf ${{ env.file_name }} -P /.local/share/godot/templates/${GODOT_VERSION}.stable/
       
     - name: Upload artifacts
       uses: actions/upload-artifact@v3
