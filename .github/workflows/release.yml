@@ -13,7 +13,7 @@ jobs:
       run: |
         . /etc/os-release
         FILE_NAME=godot-${GODOT_VERSION}-${ID}-${VERSION_ID}-${VERSION_CODENAME}.tar.gz
-        echo "file_name={FILE_NAME}" >> "$GITHUB_ENV"
+        echo "file_name=${FILE_NAME}" >> "$GITHUB_ENV"
         
     - name: Compress files
       run: tar -czvf ${{ env.file_name }} /.local/share/godot/templates/${GODOT_VERSION}.stable/
