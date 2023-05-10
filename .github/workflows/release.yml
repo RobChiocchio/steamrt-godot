@@ -2,6 +2,9 @@ name: Release
 
 on: 
   workflow_dispatch:
+  push:
+    tags:
+      - '*'
 
 jobs:
   upload:
@@ -16,7 +19,7 @@ jobs:
         echo "file_name=${FILE_NAME}" >> "$GITHUB_ENV"
         
     - name: Compress files
-      run: tar -czvf ${{ env.file_name }} -P ${HOMEDIR}/.local/share/godot/templates/${GODOT_VERSION}.stable/
+      run: tar -czvf ${{ env.file_name }} -C ${HOMEDIR}/.local/share/godot/templates/${GODOT_VERSION}.stable/ .
       
     - name: Upload artifacts
       uses: actions/upload-artifact@v3
@@ -32,8 +35,8 @@ jobs:
 
     - name: Release
       uses: softprops/action-gh-release@v1
+      if: startsWith(github.ref, 'refs/tags/')
       with:
-        # tag_name: ${{ steps.tag.output.new_tag }}
         generate_release_notes: true
         fail_on_unmatched_files: true
         files: |
