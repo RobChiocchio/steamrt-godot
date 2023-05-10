@@ -13,8 +13,8 @@ on:
       - opened
     #   - synchronize
     #   - reopened
-    # paths:
-    #   - "**Dockerfile"
+    paths:
+      - "**Dockerfile"
   workflow_dispatch:
 
 jobs:
