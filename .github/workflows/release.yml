@@ -1,0 +1,43 @@
+name: Release
+
+on: 
+  workflow_dispatch:
+  push:
+    tags:
+      - '*'
+
+jobs:
+  upload:
+    runs-on: ubuntu-latest
+    container:
+      image: robchio/steamrt-godot:latest
+    steps:
+    - name: Set archive filename
+      run: |
+        . /etc/os-release
+        FILE_NAME=godot-${GODOT_VERSION}-${ID}-${VERSION_ID}-${VERSION_CODENAME}.tar.gz
+        echo "file_name=${FILE_NAME}" >> "$GITHUB_ENV"
+        
+    - name: Compress files
+      run: tar -czvf ${{ env.file_name }} -C ${HOMEDIR}/.local/share/godot/templates/${GODOT_VERSION}.stable/ .
+      
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: build
+        path: ${{ env.file_name }}
+        
+    # - name: Checkout code
+    #   uses: actions/checkout@v3
+    #   with:
+    #     ref: ${{ github.head_ref }}   # checkout the correct branch name
+    #     fetch-depth: 0                # fetch the whole repo history
+
+    - name: Release
+      uses: softprops/action-gh-release@v1
+      if: startsWith(github.ref, 'refs/tags/')
+      with:
+        generate_release_notes: true
+        fail_on_unmatched_files: true
+        files: |
+          ${{ env.file_name }}
