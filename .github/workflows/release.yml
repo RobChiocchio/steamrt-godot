@@ -1,0 +1,17 @@
+name: Release
+
+on: 
+  workflow_dispatch:
+
+jobs:
+  upload:
+    runs-on: ubuntu-latest
+    container:
+      image: robchio/steamrt-godot:latest
+    steps:
+      
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: build
+        path: /.local/share/godot/templates/${GODOT_VERSION}.stable/*
