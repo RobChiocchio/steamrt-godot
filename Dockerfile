@@ -111,8 +111,8 @@ RUN scons -j$(nproc) platform=windows target=editor production=yes tools=yes arc
 RUN mkdir --parents ~/.local/share/godot/templates/${GODOT_VERSION}.stable \
     && mv bin/godot.linuxbsd.template_release.x86_64 ~/.local/share/godot/templates/${GODOT_VERSION}.stable/linux_release.x86_64 \
     && mv bin/godot.linuxbsd.template_debug.x86_64 ~/.local/share/godot/templates/${GODOT_VERSION}.stable/linux_debug.x86_64 \
-#   && mv bin/godot.linuxbsd.editor.x86_64 ~/.local/share/godot/templates/${GODOT_VERSION}.stable/linux_editor.x86_64 \
-    && mv bin/godot.linuxbsd.editor.x86_64 /usr/local/bin/godot \
+    && mv bin/godot.linuxbsd.editor.x86_64 ~/.local/share/godot/templates/${GODOT_VERSION}.stable/linux_editor.x86_64 \
+    # && mv bin/godot.linuxbsd.editor.x86_64 /usr/local/bin/godot \
     && mv bin/godot.windows.template_release.x86_64.exe ~/.local/share/godot/templates/${GODOT_VERSION}.stable/windows_release_x86_64.exe \
     && mv bin/godot.windows.template_release.x86_64.console.exe ~/.local/share/godot/templates/${GODOT_VERSION}.stable/windows_release_x86_64_console.exe \
     && mv bin/godot.windows.template_debug.x86_64.exe ~/.local/share/godot/templates/${GODOT_VERSION}.stable/windows_debug_x86_64.exe \
@@ -143,7 +143,7 @@ RUN useradd -d ${HOMEDIR} -m "${USER}"
 WORKDIR ${HOMEDIR}
 
 COPY --from=build /root/.local/share/godot/templates/${GODOT_VERSION}.stable/ ${HOMEDIR}/.local/share/godot/templates/${GODOT_VERSION}.stable/
-COPY --from=build /usr/local/bin/godot /usr/local/bin/godot
+# COPY --from=build /usr/local/bin/godot /usr/local/bin/godot
 
 # Insert Steam prompt answers
 RUN echo steam steam/question select "I AGREE" | debconf-set-selections \
