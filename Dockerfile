@@ -1,5 +1,5 @@
-ARG GODOT_VERSION="4.0.2"
-ARG STEAMWORKS_VERSION="157"
+ARG GODOT_VERSION="4.1.2"
+ARG STEAMWORKS_VERSION="158"
 
 FROM registry.gitlab.steamos.cloud/steamrt/sniper/sdk:latest AS build
 
