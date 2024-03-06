@@ -1,5 +1,5 @@
-ARG GODOT_VERSION="4.0.2"
-ARG STEAMWORKS_VERSION="157"
+ARG GODOT_VERSION="4.2.1"
+ARG STEAMWORKS_VERSION="159"
 
 FROM registry.gitlab.steamos.cloud/steamrt/sniper/sdk:latest AS build
 
@@ -17,10 +17,8 @@ ARG STEAMWORKS_VERSION
 ENV STEAMWORKS_VERSION=${STEAMWORKS_VERSION}
 
 ARG DEBIAN_FRONTEND=noninteractive
-ARG BUILD_FLAGS="linker=mold use_lto=no builtin_libogg=no builtin_libtheora=no builtin_libvorbis=no builtin_libwebp=no builtin_pcre2=no"
-# builtin_freetype=no builtin_libpng=no builtin_zlib=no builtin_graphite=no builtin_harfbuzz=no
-
-# RUN add-apt-repository ppa:kisak/kisak-mesa && apt-get update
+ARG BUILD_FLAGS="linker=mold use_lto=auto builtin_libogg=no builtin_libtheora=no builtin_libvorbis=no builtin_libwebp=no"
+                #builtin_pcre2=no builtin_freetype=no builtin_libpng=no builtin_zlib=no builtin_graphite=no builtin_harfbuzz=no"
 
 # RUN ~/.steam/root/ubuntu12_32/steam-runtime/setup.sh
 
@@ -39,14 +37,14 @@ RUN apt-get install -yqq --no-install-recommends \
     libudev-dev \
     libxi-dev \
     libxrandr-dev \
-    mingw-w64
-    # mesa-vulkan-drivers
+    mingw-w64 \
+    && rm -rf /var/lib/apt/lists/*
 
 # Download Godot editor binary
-RUN wget -nv https://downloads.tuxfamily.org/godotengine/${GODOT_VERSION}/Godot_v${GODOT_VERSION}-stable_linux.x86_64.zip \
-    && unzip Godot_v${GODOT_VERSION}-stable_linux.x86_64.zip \
-    && rm Godot_v${GODOT_VERSION}-stable_linux.x86_64.zip \
-    && mv Godot_v${GODOT_VERSION}-stable_linux.x86_64 /usr/local/bin/godot
+#RUN wget -nv https://downloads.tuxfamily.org/godotengine/${GODOT_VERSION}/Godot_v${GODOT_VERSION}-stable_linux.x86_64.zip \
+#    && unzip Godot_v${GODOT_VERSION}-stable_linux.x86_64.zip \
+#    && rm Godot_v${GODOT_VERSION}-stable_linux.x86_64.zip \
+#    && mv Godot_v${GODOT_VERSION}-stable_linux.x86_64 /usr/local/bin/godot
 
 # Download Godot templates
 #RUN wget -nv https://downloads.tuxfamily.org/godotengine/${GODOT_VERSION}/Godot_v${GODOT_VERSION}-stable_export_templates.tpz \
@@ -66,24 +64,30 @@ RUN wget -nv https://github.com/Gramps/GodotSteam/archive/refs/heads/godot4.zip 
     && unzip godot4.zip \
     && rm godot4.zip \
     && mv GodotSteam-godot4 godot/modules/godotsteam
-    
+
 # Download and set up mold for faster linking
 RUN export MOLD_LATEST=$(curl -L -s https://api.github.com/repos/rui314/mold/releases/latest | grep -o -E "https://(.*)mold-(.*)-x86_64-linux.tar.gz") \
-    && wget -nv ${MOLD_LATEST} \
-    && tar -xf $(echo $MOLD_LATEST | sed "s/.*\/\(.*\)/\1/") \
-    && rsync -a $(echo $MOLD_LATEST | sed "s/.*\/\(.*\)\.tar.gz/\1/")/ /usr/local/
-    
+    && curl -L -o mold.tar.gz ${MOLD_LATEST} \
+    && tar -xf mold.tar.gz \
+    && rsync -a mold*/ /usr/local/ \
+    && rm -rf mold*
+
 # Donload and set up Pyston for potentially faster compilation
 RUN export PYSTON_LATEST=$(curl -L -s https://api.github.com/repos/pyston/pyston/releases/latest | grep -o -E "https://(.*)pyston_(.*)_portable_amd64.tar.gz") \
     && wget -nv ${PYSTON_LATEST} \
     && tar -xf $(echo $PYSTON_LATEST | sed "s/.*\/\(.*\)/\1/") \
     && rsync -a $(echo $PYSTON_LATEST | sed "s/.*\/\(.*\)\.tar.gz/\1/")/ /usr/local/
 
+# Pass build options
+COPY custom.py godot/custom.py
+
 # Download Steamworks SDK
-RUN wget -nv --no-cookies --header "${STEAMWORKS_COOKIE}" https://partner.steamgames.com/downloads/steamworks_sdk_${STEAMWORKS_VERSION}.zip \
-    && unzip steamworks_sdk_${STEAMWORKS_VERSION}.zip \
-    && rm steamworks_sdk_${STEAMWORKS_VERSION}.zip \
-    && mv sdk/* godot/modules/godotsteam/sdk/
+#RUN wget -nv --no-cookies --header "${STEAMWORKS_COOKIE}" https://partner.steamgames.com/downloads/steamworks_sdk_${STEAMWORKS_VERSION}.zip \
+#    && unzip steamworks_sdk_${STEAMWORKS_VERSION}.zip \
+#    && rm steamworks_sdk_${STEAMWORKS_VERSION}.zip \
+#    && mv sdk/* godot/modules/godotsteam/sdk/
+
+COPY sdk/ godot/modules/godotsteam/sdk/
 
 WORKDIR /godot
 
@@ -95,9 +99,6 @@ RUN scons -j$(nproc) platform=linuxbsd target=template_debug arch=x86_64 ${BUILD
 
 # Build Godot editor for Linux
 RUN scons -j$(nproc) platform=linuxbsd target=editor arch=x86_64 ${BUILD_FLAGS}
-
-# Build Godot editor for Linux
-RUN scons -j$(nproc) platform=linuxbsd target=editor production=yes tools=yes arch=x86_64 ${BUILD_FLAGS}
 
 # Configure MinGW
 RUN update-alternatives --set x86_64-w64-mingw32-gcc /usr/bin/x86_64-w64-mingw32-gcc-posix \
@@ -117,6 +118,7 @@ RUN mkdir --parents ~/.local/share/godot/templates/${GODOT_VERSION}.stable \
     && mv bin/godot.linuxbsd.template_release.x86_64 ~/.local/share/godot/templates/${GODOT_VERSION}.stable/linux_release.x86_64 \
     && mv bin/godot.linuxbsd.template_debug.x86_64 ~/.local/share/godot/templates/${GODOT_VERSION}.stable/linux_debug.x86_64 \
     && mv bin/godot.linuxbsd.editor.x86_64 ~/.local/share/godot/templates/${GODOT_VERSION}.stable/linux_editor.x86_64 \
+    # && mv bin/godot.linuxbsd.editor.x86_64 /usr/local/bin/godot \
     && mv bin/godot.windows.template_release.x86_64.exe ~/.local/share/godot/templates/${GODOT_VERSION}.stable/windows_release_x86_64.exe \
     && mv bin/godot.windows.template_release.x86_64.console.exe ~/.local/share/godot/templates/${GODOT_VERSION}.stable/windows_release_x86_64_console.exe \
     && mv bin/godot.windows.template_debug.x86_64.exe ~/.local/share/godot/templates/${GODOT_VERSION}.stable/windows_debug_x86_64.exe \
@@ -147,7 +149,7 @@ RUN useradd -d ${HOMEDIR} -m "${USER}"
 WORKDIR ${HOMEDIR}
 
 COPY --from=build /root/.local/share/godot/templates/${GODOT_VERSION}.stable/ ${HOMEDIR}/.local/share/godot/templates/${GODOT_VERSION}.stable/
-COPY --from=build /usr/local/bin/godot /usr/local/bin/godot
+# COPY --from=build /usr/local/bin/godot /usr/local/bin/godot
 
 # Insert Steam prompt answers
 RUN echo steam steam/question select "I AGREE" | debconf-set-selections \
