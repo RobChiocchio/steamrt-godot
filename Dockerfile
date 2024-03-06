@@ -82,8 +82,7 @@ RUN export PYSTON_LATEST=$(curl -L -s https://api.github.com/repos/pyston/pyston
     && rsync -a pyston*/ /local/ \
     && rm -rf pyston* \
     && /local/bin/pyston -m pip install scons \
-    && /local/bin/pyston -m pip show scons
-    #&& ln -s /local/bin/pyston/bin/scons /local/bin/pyston-scons
+    && /local/bin/pyston -m pip show scons | grep Location | awk '{print $2}' | xargs -I {} ln -s {}/scons /local/bin/pyston-scons
 
 # Pass build options
 COPY custom.py godot/custom.py
@@ -99,26 +98,26 @@ COPY sdk/ godot/modules/godotsteam/sdk/
 WORKDIR /godot
 
 # Build Godot release template for Linux
-RUN /local/bin/pyston -m scons -j$(nproc) platform=linuxbsd target=template_release production=yes arch=x86_64 ${BUILD_FLAGS}
+RUN pyston-scons -j$(nproc) platform=linuxbsd target=template_release production=yes arch=x86_64 ${BUILD_FLAGS}
 
 # Build Godot debug template for Linux
-RUN /local/bin/pyston -m scons -j$(nproc) platform=linuxbsd target=template_debug arch=x86_64 ${BUILD_FLAGS}
+RUN pyston-scons -j$(nproc) platform=linuxbsd target=template_debug arch=x86_64 ${BUILD_FLAGS}
 
 # Build Godot editor for Linux
-RUN /local/bin/pyston -m scons -j$(nproc) platform=linuxbsd target=editor arch=x86_64 ${BUILD_FLAGS}
+RUN pyston-scons -j$(nproc) platform=linuxbsd target=editor arch=x86_64 ${BUILD_FLAGS}
 
 # Configure MinGW
 RUN update-alternatives --set x86_64-w64-mingw32-gcc /bin/x86_64-w64-mingw32-gcc-posix \
     && update-alternatives --set x86_64-w64-mingw32-g++ /bin/x86_64-w64-mingw32-g++-posix
 
 # Build Godot release template for Windows
-RUN /local/bin/pyston -m scons -j$(nproc) platform=windows  target=template_release production=yes arch=x86_64
+RUN pyston-scons -j$(nproc) platform=windows  target=template_release production=yes arch=x86_64
 
 # Build Godot debug template for Windows
-RUN /local/bin/pyston -m scons -j$(nproc) platform=windows  target=template_debug arch=x86_64
+RUN pyston-scons -j$(nproc) platform=windows  target=template_debug arch=x86_64
 
 # Build Godot editor for Windows
-RUN /local/bin/pyston -m scons -j$(nproc) platform=windows target=editor production=yes tools=yes arch=x86_64
+RUN pyston-scons -j$(nproc) platform=windows target=editor production=yes tools=yes arch=x86_64
 
 # Copy Godot template to user's templates folder
 RUN mkdir --parents ~/.local/share/godot/templates/${GODOT_VERSION}.stable \
