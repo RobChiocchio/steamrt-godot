@@ -48,10 +48,10 @@ jobs:
       run: |
         if [[ "${{ github.event.inputs.godot_version }}" == "" ]]; then
           # Fetch the latest Godot version if not specified
-          GODOT_VERSION=$(curl -s https://api.github.com/repos/godotengine/godot/releases/latest | jq -r '.tag_name')
+          GODOT_VERSION=$(curl -s https://api.github.com/repos/godotengine/godot/releases/latest | jq -r '.tag_name' | sed -e 's/-stable//')
         else
           # Use the manually specified Godot version
-          GODOT_VERSION="${{ github.event.inputs.godot_version }}"
+          GODOT_VERSION="${{ github.event.inputs.godot_version }}" | sed -e 's/-stable//'
         fi
         echo "GODOT_VERSION=$GODOT_VERSION" >> $GITHUB_ENV
         echo "godot_version=$GODOT_VERSION" >> $GITHUB_OUTPUT
