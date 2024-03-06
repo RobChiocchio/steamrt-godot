@@ -85,7 +85,7 @@ RUN export PYSTON_LATEST=$(curl -L -s https://api.github.com/repos/pyston/pyston
     #&& export PYSTON_SCONS=$(/local/bin/pyston -m pip show scons | grep Location | awk '{print $2}')/scons \
     #&& /local/bin/pyston -m pip show scons | grep Location | awk '{print $2}' | xargs -I {} ln -s {}/scons /local/bin/pyston-scons \
     && export PYSTON_SCONS=/local/bin/pyston/bin/scons \
-    && ls $PYSTON_SCONS \
+    && ls /local/bin/pyston/bin/ \
     && ln -s $PYSTON_SCONS /local/bin/pyston-scons
 
 # Pass build options
