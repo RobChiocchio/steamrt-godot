@@ -82,7 +82,8 @@ RUN export PYSTON_LATEST=$(curl -L -s https://api.github.com/repos/pyston/pyston
     && rsync -a pyston*/ /local/ \
     && rm -rf pyston* \
     && /local/bin/pyston -m pip install scons \
-    && ln -s /local/bin/pyston/bin/scons /local/bin/pyston-scons
+    && /local/bin/pyston -m pip show scons
+    #&& ln -s /local/bin/pyston/bin/scons /local/bin/pyston-scons
 
 # Pass build options
 COPY custom.py godot/custom.py
