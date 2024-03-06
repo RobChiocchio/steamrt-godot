@@ -82,7 +82,10 @@ RUN export PYSTON_LATEST=$(curl -L -s https://api.github.com/repos/pyston/pyston
     && rsync -a pyston*/ /local/ \
     && rm -rf pyston* \
     && /local/bin/pyston -m pip install scons \
-    && /local/bin/pyston -m pip show scons | grep Location | awk '{print $2}' | xargs -I {} ln -s {}/scons /local/bin/pyston-scons
+    && export PYSTON_SCONS=$(/local/bin/pyston -m pip show scons | grep Location | awk '{print $2}')/scons \
+    #&& /local/bin/pyston -m pip show scons | grep Location | awk '{print $2}' | xargs -I {} ln -s {}/scons /local/bin/pyston-scons \
+    && echo $PYSTON_SCONS \
+    && ln -s $PYSTON_SCONS /local/bin/pyston-scons
 
 # Pass build options
 COPY custom.py godot/custom.py
