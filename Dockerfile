@@ -81,7 +81,7 @@ RUN export PYSTON_LATEST=$(curl -L -s https://api.github.com/repos/pyston/pyston
     && tar -xf pyston.tar.gz \
     && rsync -a pyston*/ /local/ \
     && rm -rf pyston* \
-    && /local/bin/pyston -m pip install scons \
+    && /local/bin/pyston -m pip install --no-cache-dir --upgrade --force-reinstall scons \
     && export PYSTON_SCONS=$(/local/bin/pyston -m pip show scons | grep Location | awk '{print $2}')/scons \
     #&& /local/bin/pyston -m pip show scons | grep Location | awk '{print $2}' | xargs -I {} ln -s {}/scons /local/bin/pyston-scons \
     && echo $PYSTON_SCONS \
