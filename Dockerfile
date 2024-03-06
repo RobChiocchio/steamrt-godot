@@ -65,13 +65,15 @@ RUN wget -nv https://github.com/Gramps/GodotSteam/archive/refs/heads/godot4.zip 
     && rm godot4.zip \
     && mv GodotSteam-godot4 godot/modules/godotsteam
 
+# Set up local bin directory
+ENV PATH="/local/bin:${PATH}"
+
 # Download and set up mold for faster linking
 RUN export MOLD_LATEST=$(curl -L -s https://api.github.com/repos/rui314/mold/releases/latest | grep -o -E "https://(.*)mold-(.*)-x86_64-linux.tar.gz") \
     && curl -L -o mold.tar.gz ${MOLD_LATEST} \
     && tar -xf mold.tar.gz \
     && rsync -a mold*/ /local/ \
-    && rm -rf mold* \
-    && export PATH=$PATH:/local/bin
+    && rm -rf mold*
 
 # Donload and set up Pyston for potentially faster compilation
 RUN export PYSTON_LATEST=$(curl -L -s https://api.github.com/repos/pyston/pyston/releases/latest | grep -o -E "https://(.*)pyston_(.*)_portable_amd64.tar.gz") \
