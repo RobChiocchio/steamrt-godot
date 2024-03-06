@@ -98,26 +98,26 @@ COPY sdk/ godot/modules/godotsteam/sdk/
 WORKDIR /godot
 
 # Build Godot release template for Linux
-RUN pyston-scons -j$(nproc) platform=linuxbsd target=template_release production=yes arch=x86_64 ${BUILD_FLAGS}
+RUN /local/bin/pyston-scons -j$(nproc) platform=linuxbsd target=template_release production=yes arch=x86_64 ${BUILD_FLAGS}
 
 # Build Godot debug template for Linux
-RUN pyston-scons -j$(nproc) platform=linuxbsd target=template_debug arch=x86_64 ${BUILD_FLAGS}
+RUN /local/bin/pyston-scons -j$(nproc) platform=linuxbsd target=template_debug arch=x86_64 ${BUILD_FLAGS}
 
 # Build Godot editor for Linux
-RUN pyston-scons -j$(nproc) platform=linuxbsd target=editor arch=x86_64 ${BUILD_FLAGS}
+RUN /local/bin/pyston-scons -j$(nproc) platform=linuxbsd target=editor arch=x86_64 ${BUILD_FLAGS}
 
 # Configure MinGW
 RUN update-alternatives --set x86_64-w64-mingw32-gcc /bin/x86_64-w64-mingw32-gcc-posix \
     && update-alternatives --set x86_64-w64-mingw32-g++ /bin/x86_64-w64-mingw32-g++-posix
 
 # Build Godot release template for Windows
-RUN pyston-scons -j$(nproc) platform=windows  target=template_release production=yes arch=x86_64
+RUN /local/bin/pyston-scons -j$(nproc) platform=windows  target=template_release production=yes arch=x86_64
 
 # Build Godot debug template for Windows
-RUN pyston-scons -j$(nproc) platform=windows  target=template_debug arch=x86_64
+RUN /local/bin/pyston-scons -j$(nproc) platform=windows  target=template_debug arch=x86_64
 
 # Build Godot editor for Windows
-RUN pyston-scons -j$(nproc) platform=windows target=editor production=yes tools=yes arch=x86_64
+RUN /local/bin/pyston-scons -j$(nproc) platform=windows target=editor production=yes tools=yes arch=x86_64
 
 # Copy Godot template to user's templates folder
 RUN mkdir --parents ~/.local/share/godot/templates/${GODOT_VERSION}.stable \
