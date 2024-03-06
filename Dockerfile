@@ -69,8 +69,9 @@ RUN wget -nv https://github.com/Gramps/GodotSteam/archive/refs/heads/godot4.zip 
 RUN export MOLD_LATEST=$(curl -L -s https://api.github.com/repos/rui314/mold/releases/latest | grep -o -E "https://(.*)mold-(.*)-x86_64-linux.tar.gz") \
     && curl -L -o mold.tar.gz ${MOLD_LATEST} \
     && tar -xf mold.tar.gz \
-    && rsync -a mold*/ /usr/local/ \
-    && rm -rf mold*
+    && rsync -a mold*/ /local/ \
+    && rm -rf mold* \
+    && export PATH=$PATH:/local/bin
 
 # Donload and set up Pyston for potentially faster compilation
 RUN export PYSTON_LATEST=$(curl -L -s https://api.github.com/repos/pyston/pyston/releases/latest | grep -o -E "https://(.*)pyston_(.*)_portable_amd64.tar.gz") \
