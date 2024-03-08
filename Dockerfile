@@ -84,10 +84,10 @@ RUN export PYSTON_LATEST=$(curl -L -s https://api.github.com/repos/pyston/pyston
     && rsync -a pyston*/ /usr/local/ \
     && rm -rf pyston* \
     && /usr/local/bin/pyston -m pip install --no-cache-dir --upgrade --force-reinstall scons \
-    #&& export PYSTON_SCONS=$(/local/bin/pyston -m pip show scons | grep Location | awk '{print $2}')/scons \
-    #&& /local/bin/pyston -m pip show scons | grep Location | awk '{print $2}' | xargs -I {} ln -s {}/scons /local/bin/pyston-scons \
     && export PYSTON_SCONS=/usr/local/bin/scons \
     && ln -s $PYSTON_SCONS /usr/local/bin/pyston-scons
+
+# TODO: swap RUN curl with ADD
 
 # Pass build options
 COPY custom.py godot/custom.py
@@ -159,6 +159,7 @@ RUN useradd -d ${HOMEDIR} -m "${USER}"
 
 WORKDIR ${HOMEDIR}
 
+# TODO: move this below the SteamCMD installation?
 COPY --from=build /root/.local/share/godot/templates/${GODOT_VERSION}.stable/ ${HOMEDIR}/.local/share/godot/templates/${GODOT_VERSION}.stable/
 # COPY --from=build /usr/local/bin/godot /usr/local/bin/godot
 
