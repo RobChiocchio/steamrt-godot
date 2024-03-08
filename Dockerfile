@@ -19,6 +19,7 @@ ENV STEAMWORKS_VERSION=${STEAMWORKS_VERSION}
 ARG DEBIAN_FRONTEND=noninteractive
 ARG BUILD_FLAGS="use_llvm=yes linker=mold use_lto=auto builtin_libogg=no builtin_libtheora=no builtin_libvorbis=no builtin_libwebp=no"
                 #builtin_pcre2=no builtin_freetype=no builtin_libpng=no builtin_zlib=no builtin_graphite=no builtin_harfbuzz=no"
+ARG TEMPLATE_BUILD_FLAGS="disable_3d=yes"
 
 # RUN ~/.steam/root/ubuntu12_32/steam-runtime/setup.sh
 
@@ -27,16 +28,16 @@ RUN apt-get install -yqq --no-install-recommends \
     # build-essential \
     # scons \
     # pkg-config \
-    libx11-dev \
-    libxcursor-dev \
-    libxinerama-dev \
-    libgl1-mesa-dev \
-    libglu-dev \
-    libasound2-dev \
-    libpulse-dev \
-    libudev-dev \
-    libxi-dev \
-    libxrandr-dev \
+    # libx11-dev \
+    # libxcursor-dev \
+    # libxinerama-dev \
+    # libgl1-mesa-dev \
+    # libglu-dev \
+    # libasound2-dev \
+    # libpulse-dev \
+    # libudev-dev \
+    # libxi-dev \
+    # libxrandr-dev \
     mingw-w64 \
     && rm -rf /var/lib/apt/lists/*
 
@@ -66,27 +67,26 @@ RUN wget -nv https://github.com/Gramps/GodotSteam/archive/refs/heads/godot4.zip 
     && mv GodotSteam-godot4 godot/modules/godotsteam
 
 # Set up local bin directory
-ENV PATH="/local/bin:${PATH}"
+ENV PATH="/usr/local/bin:${PATH}"
 
 # Download and set up mold for faster linking
 RUN export MOLD_LATEST=$(curl -L -s https://api.github.com/repos/rui314/mold/releases/latest | grep -o -E "https://(.*)mold-(.*)-x86_64-linux.tar.gz") \
     && curl -L -o mold.tar.gz ${MOLD_LATEST} \
     && tar -xf mold.tar.gz \
-    && rsync -a mold*/ /local/ \
+    && rsync -a mold*/ /usr/local/ \
     && rm -rf mold*
 
 # Donload and set up Pyston for potentially faster compilation
 RUN export PYSTON_LATEST=$(curl -L -s https://api.github.com/repos/pyston/pyston/releases/latest | grep -o -E "https://(.*)pyston_(.*)_portable_amd64.tar.gz") \
     && curl -L -o pyston.tar.gz ${PYSTON_LATEST} \
     && tar -xf pyston.tar.gz \
-    && rsync -a pyston*/ /local/ \
+    && rsync -a pyston*/ /usr/local/ \
     && rm -rf pyston* \
-    && /local/bin/pyston -m pip install --no-cache-dir --upgrade --force-reinstall scons \
+    && /usr/local/bin/pyston -m pip install --no-cache-dir --upgrade --force-reinstall scons \
     #&& export PYSTON_SCONS=$(/local/bin/pyston -m pip show scons | grep Location | awk '{print $2}')/scons \
     #&& /local/bin/pyston -m pip show scons | grep Location | awk '{print $2}' | xargs -I {} ln -s {}/scons /local/bin/pyston-scons \
-    && export PYSTON_SCONS=/local/bin/scons \
-    && ls $PYSTON_SCONS \
-    && ln -s $PYSTON_SCONS /local/bin/pyston-scons
+    && export PYSTON_SCONS=/usr/local/bin/scons \
+    && ln -s $PYSTON_SCONS /usr/local/bin/pyston-scons
 
 # Pass build options
 COPY custom.py godot/custom.py
@@ -102,26 +102,26 @@ COPY sdk/ godot/modules/godotsteam/sdk/
 WORKDIR /godot
 
 # Build Godot release template for Linux
-RUN /local/bin/pyston-scons -j$(nproc) platform=linuxbsd target=template_release production=yes arch=x86_64 ${BUILD_FLAGS}
+RUN pyston-scons -j$(nproc) platform=linuxbsd target=template_release production=yes arch=x86_64 ${BUILD_FLAGS} ${TEMPLATE_BUILD_FLAGS}
 
 # Build Godot debug template for Linux
-RUN /local/bin/pyston-scons -j$(nproc) platform=linuxbsd target=template_debug arch=x86_64 ${BUILD_FLAGS}
+RUN pyston-scons -j$(nproc) platform=linuxbsd target=template_debug arch=x86_64 dev_build=yes ${BUILD_FLAGS} ${TEMPLATE_BUILD_FLAGS}
 
 # Build Godot editor for Linux
-RUN /local/bin/pyston-scons -j$(nproc) platform=linuxbsd target=editor arch=x86_64 ${BUILD_FLAGS}
+RUN pyston-scons -j$(nproc) platform=linuxbsd target=editor arch=x86_64 ${BUILD_FLAGS}
 
 # Configure MinGW
-RUN update-alternatives --set x86_64-w64-mingw32-gcc /bin/x86_64-w64-mingw32-gcc-posix \
-    && update-alternatives --set x86_64-w64-mingw32-g++ /bin/x86_64-w64-mingw32-g++-posix
+RUN update-alternatives --set x86_64-w64-mingw32-gcc /usr/bin/x86_64-w64-mingw32-gcc-posix \
+    && update-alternatives --set x86_64-w64-mingw32-g++ /usr/bin/x86_64-w64-mingw32-g++-posix
 
 # Build Godot release template for Windows
-RUN /local/bin/pyston-scons -j$(nproc) platform=windows  target=template_release production=yes arch=x86_64
+RUN pyston-scons -j$(nproc) platform=windows target=template_release production=yes arch=x86_64 ${TEMPLATE_BUILD_FLAGS}
 
 # Build Godot debug template for Windows
-RUN /local/bin/pyston-scons -j$(nproc) platform=windows  target=template_debug arch=x86_64
+RUN pyston-scons -j$(nproc) platform=windows target=template_debug arch=x86_64 dev_build=yes ${TEMPLATE_BUILD_FLAGS}
 
 # Build Godot editor for Windows
-RUN /local/bin/pyston-scons -j$(nproc) platform=windows target=editor production=yes tools=yes arch=x86_64
+RUN pyston-scons -j$(nproc) platform=windows target=editor tools=yes arch=x86_64
 
 # Copy Godot template to user's templates folder
 RUN mkdir --parents ~/.local/share/godot/templates/${GODOT_VERSION}.stable \
