@@ -22,24 +22,8 @@ ARG BUILD_FLAGS="use_llvm=yes linker=mold use_lto=auto"
                 #builtin_pcre2=no builtin_freetype=no builtin_libpng=no builtin_zlib=no builtin_graphite=no builtin_harfbuzz=no"
 ARG TEMPLATE_BUILD_FLAGS="disable_3d=yes"
 
-# RUN ~/.steam/root/ubuntu12_32/steam-runtime/setup.sh
-
 # Install dependencies for Godot compile
-RUN apt-get install -yqq --no-install-recommends \
-    # build-essential \
-    # scons \
-    # pkg-config \
-    # libx11-dev \
-    # libxcursor-dev \
-    # libxinerama-dev \
-    # libgl1-mesa-dev \
-    # libglu-dev \
-    # libasound2-dev \
-    # libpulse-dev \
-    # libudev-dev \
-    # libxi-dev \
-    # libxrandr-dev \
-    mingw-w64 \
+RUN apt-get install -yqq --no-install-recommends mingw-w64 \
     && rm -rf /var/lib/apt/lists/*
 
 # Download Godot editor binary
