@@ -6,13 +6,22 @@ on:
       - "main"
     paths:
       - "**Dockerfile"
-  pull_request_target:
+  # pull_request_target:
+  #   branches: 
+  #     - "main"
+  #   types:
+  #     - closed
+  #   #   - opened
+  #   #   - synchronize
+  #   #   - reopened
+  #   paths:
+  #     - "**Dockerfile"
+  pull_request:
     branches: 
       - "main"
     types:
-      - opened
-    #   - synchronize
-    #   - reopened
+      - ready_for_review
+      - review_requested
     paths:
       - "**Dockerfile"
   workflow_dispatch:
