@@ -51,6 +51,12 @@ RUN wget -nv https://github.com/Gramps/GodotSteam/archive/refs/heads/godot4.zip 
     && rm godot4.zip \
     && mv GodotSteam-godot4 godot/modules/godotsteam
 
+# Download GodotSteam Multiplayer Peer module
+RUN wget -nv https://github.com/Gramps/GodotSteam/archive/refs/heads/multiplayer-peer.zip \
+    && unzip multiplayer-peer.zip \
+    && rm multiplayer-peer.zip \
+    && mv GodotSteam-multiplayer-peer godot/modules/godotsteam_multiplayer
+
 # Set up local bin directory
 ENV PATH="/usr/local/bin:${PATH}"
 
