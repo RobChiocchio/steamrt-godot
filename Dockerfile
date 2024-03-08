@@ -17,7 +17,8 @@ ARG STEAMWORKS_VERSION
 ENV STEAMWORKS_VERSION=${STEAMWORKS_VERSION}
 
 ARG DEBIAN_FRONTEND=noninteractive
-ARG BUILD_FLAGS="use_llvm=yes linker=mold use_lto=auto builtin_libogg=no builtin_libtheora=no builtin_libvorbis=no builtin_libwebp=no"
+ARG BUILD_FLAGS="use_llvm=yes linker=mold use_lto=auto"
+                #builtin_libogg=no builtin_libtheora=no builtin_libvorbis=no builtin_libwebp=no
                 #builtin_pcre2=no builtin_freetype=no builtin_libpng=no builtin_zlib=no builtin_graphite=no builtin_harfbuzz=no"
 ARG TEMPLATE_BUILD_FLAGS="disable_3d=yes"
 
