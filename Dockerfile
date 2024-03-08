@@ -143,10 +143,6 @@ RUN useradd -d ${HOMEDIR} -m "${USER}"
 
 WORKDIR ${HOMEDIR}
 
-# TODO: move this below the SteamCMD installation?
-COPY --from=build /root/.local/share/godot/templates/${GODOT_VERSION}.stable/ ${HOMEDIR}/.local/share/godot/templates/${GODOT_VERSION}.stable/
-# COPY --from=build /usr/local/bin/godot /usr/local/bin/godot
-
 # Insert Steam prompt answers
 RUN echo steam steam/question select "I AGREE" | debconf-set-selections \
  && echo steam steam/license note "" | debconf-set-selections
@@ -164,3 +160,6 @@ RUN dpkg --add-architecture i386 \
 USER ${USER}
 RUN ${STEAMCMDDIR} +quit
 USER root
+
+COPY --from=build /root/.local/share/godot/templates/${GODOT_VERSION}.stable/ ${HOMEDIR}/.local/share/godot/templates/${GODOT_VERSION}.stable/
+# COPY --from=build /usr/local/bin/godot /usr/local/bin/godot
