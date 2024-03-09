@@ -132,6 +132,7 @@ jobs:
     - name: Generate build-info JSON file
       run: |
         mkdir -p gh-pages/build-info
+        echo "<a href="build-info/latest.json">$(date +'%Y-%m-%d')</a>" > gh-pages/index.html
         echo "{\"godot_version\": \"${{ steps.versions.outputs.godot_version }}\", \"steamworks_version\": \"${{ steps.versions.outputs.steamworks_version }}\"}" > gh-pages/build-info/latest.json
         cp gh-pages/build-info/latest.json gh-pages/build-info/${{ steps.get_ref.outputs.tag }}_${{ github.run_id }}.json
 
