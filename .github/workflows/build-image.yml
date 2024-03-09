@@ -76,6 +76,7 @@ jobs:
         repository: ${{ secrets.STEAMWORKS_SDK_REPO }}
         path: sdk
         ref: ${{ steps.versions.outputs.steamworks_version }}
+        token: ${{ secrets.ACCESS_TOKEN }}
         sparse-checkout: |
           redistributable_bin
           public
