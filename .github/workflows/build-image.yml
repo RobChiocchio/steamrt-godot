@@ -46,6 +46,20 @@ jobs:
       id: get_ref
       run: echo "tag=${GITHUB_REF_NAME//\//_}" >> $GITHUB_OUTPUT
 
+    - name: Get Docker metadata
+      id: meta
+      uses: docker/metadata-action@v5
+      with:
+        images: |
+          ${{ secrets.DOCKERHUB_USERNAME }}/steamrt-godot
+          ghcr.io/${{ github.repository }}
+        tags: |
+          type=ref,event=branch
+          type=ref,event=pr
+          type=semver,pattern={{version}}
+          type=semver,pattern={{major}}.{{minor}}
+          type=semver,pattern={{major}}
+
     - name: Determine Godot and Steamworks Version
       id: versions
       run: |
@@ -105,11 +119,8 @@ jobs:
       uses: docker/build-push-action@v4
       with:
         context: .
-        tags: |
-          ${{ secrets.DOCKERHUB_USERNAME }}/steamrt-godot:latest
-          ${{ secrets.DOCKERHUB_USERNAME }}/steamrt-godot:${{ steps.get_ref.outputs.tag }}
-          ghcr.io/${{ github.repository_owner }}/steamrt-godot:latest
-          ghcr.io/${{ github.repository_owner }}/steamrt-godot:${{ steps.get_ref.outputs.tag }}
+        tags: ${{ steps.meta.outputs.tags }}
+        labels: ${{ steps.meta.outputs.labels }}
         push: true
         cache-from: type=gha
         cache-to: type=gha,mode=max,ignore-error=true
