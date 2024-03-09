@@ -132,8 +132,9 @@ RUN mkdir --parents ~/.local/share/godot/templates/${GODOT_VERSION}.stable \
     && mv bin/* ~/.local/share/godot/templates/${GODOT_VERSION}.stable/
 
 # Multi-stage build
-#FROM registry.gitlab.steamos.cloud/steamrt/sniper/platform:latest # DEBUG: Running out of space on GitHub Actions runner
-FROM registry.gitlab.steamos.cloud/steamrt/sniper/sdk:latest # DEBUG: Will re-using the same image save space?
+#FROM registry.gitlab.steamos.cloud/steamrt/sniper/platform:latest 
+# DEBUG: Running out of space on GitHub Actions runner
+FROM registry.gitlab.steamos.cloud/steamrt/sniper/sdk:latest
 
 ARG GODOT_VERSION
 ENV GODOT_VERSION=${GODOT_VERSION}
