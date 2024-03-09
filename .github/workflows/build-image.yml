@@ -6,22 +6,16 @@ on:
       - "main"
     paths:
       - "**Dockerfile"
-  # pull_request_target:
-  #   branches: 
-  #     - "main"
-  #   types:
-  #     - closed
-  #   #   - opened
-  #   #   - synchronize
-  #   #   - reopened
-  #   paths:
-  #     - "**Dockerfile"
-  pull_request:
+  pull_request_target:
     branches: 
       - "main"
     types:
       - ready_for_review
       - review_requested
+    #   - closed
+    #   - opened
+    #   - synchronize
+    #   - reopened
     paths:
       - "**Dockerfile"
   workflow_dispatch:
@@ -44,7 +38,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       with:
         ref: ${{ github.ref }}
 
@@ -76,6 +70,16 @@ jobs:
         echo "STEAMWORKS_VERSION=$STEAMWORKS_VERSION" >> $GITHUB_ENV
         echo "steamworks_version=$STEAMWORKS_VERSION" >> $GITHUB_OUTPUT
 
+    - name: Checkout Steamworks SDK
+      uses: actions/checkout@v4
+      with:
+        repository: ${{ secrets.STEAMWORKS_SDK_REPO }}
+        path: sdk
+        ref: ${{ steps.versions.outputs.steamworks_version }}
+        sparse-checkout: |
+          redistributable_bin
+          public
+
     - name: Set up Docker Buildx
       if: ${{ github.event.inputs.dry_run != 'true' }}
       uses: docker/setup-buildx-action@v2
@@ -86,6 +90,14 @@ jobs:
       with:
         username: ${{ secrets.DOCKERHUB_USERNAME }}
         password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+    - name: Login to GitHub Container Registry
+      if: ${{ github.event.inputs.dry_run != 'true' }}
+      uses: docker/login-action@v3
+      with:
+        registry: ghcr.io
+        username: ${{ github.repository_owner }}
+        password: ${{ secrets.GITHUB_TOKEN }}
    
     - name: Build and push the Docker image
       if: ${{ github.event.inputs.dry_run != 'true' }}
@@ -95,6 +107,8 @@ jobs:
         tags: |
           ${{ secrets.DOCKERHUB_USERNAME }}/steamrt-godot:latest
           ${{ secrets.DOCKERHUB_USERNAME }}/steamrt-godot:${{ steps.get_ref.outputs.tag }}
+          ghcr.io/${{ github.repository_owner }}/steamrt-godot:latest
+          ghcr.io/${{ github.repository_owner }}/steamrt-godot:${{ steps.get_ref.outputs.tag }}
         push: true
         cache-from: type=gha
         cache-to: type=gha,mode=max,ignore-error=true

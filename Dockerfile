@@ -17,28 +17,13 @@ ARG STEAMWORKS_VERSION
 ENV STEAMWORKS_VERSION=${STEAMWORKS_VERSION}
 
 ARG DEBIAN_FRONTEND=noninteractive
-ARG BUILD_FLAGS="use_llvm=yes linker=mold use_lto=auto builtin_libogg=no builtin_libtheora=no builtin_libvorbis=no builtin_libwebp=no"
+ARG BUILD_FLAGS="use_llvm=yes linker=mold use_lto=auto"
+                #builtin_libogg=no builtin_libtheora=no builtin_libvorbis=no builtin_libwebp=no
                 #builtin_pcre2=no builtin_freetype=no builtin_libpng=no builtin_zlib=no builtin_graphite=no builtin_harfbuzz=no"
 ARG TEMPLATE_BUILD_FLAGS="disable_3d=yes"
 
-# RUN ~/.steam/root/ubuntu12_32/steam-runtime/setup.sh
-
 # Install dependencies for Godot compile
-RUN apt-get install -yqq --no-install-recommends \
-    # build-essential \
-    # scons \
-    # pkg-config \
-    # libx11-dev \
-    # libxcursor-dev \
-    # libxinerama-dev \
-    # libgl1-mesa-dev \
-    # libglu-dev \
-    # libasound2-dev \
-    # libpulse-dev \
-    # libudev-dev \
-    # libxi-dev \
-    # libxrandr-dev \
-    mingw-w64 \
+RUN apt-get install -yqq --no-install-recommends mingw-w64 \
     && rm -rf /var/lib/apt/lists/*
 
 # Download Godot editor binary
@@ -66,6 +51,12 @@ RUN wget -nv https://github.com/Gramps/GodotSteam/archive/refs/heads/godot4.zip 
     && rm godot4.zip \
     && mv GodotSteam-godot4 godot/modules/godotsteam
 
+# Download GodotSteam Multiplayer Peer module
+RUN wget -nv https://github.com/Gramps/GodotSteam/archive/refs/heads/multiplayer-peer.zip \
+    && unzip multiplayer-peer.zip \
+    && rm multiplayer-peer.zip \
+    && mv GodotSteam-multiplayer-peer godot/modules/godotsteam_multiplayer
+
 # Set up local bin directory
 ENV PATH="/usr/local/bin:${PATH}"
 
@@ -83,10 +74,10 @@ RUN export PYSTON_LATEST=$(curl -L -s https://api.github.com/repos/pyston/pyston
     && rsync -a pyston*/ /usr/local/ \
     && rm -rf pyston* \
     && /usr/local/bin/pyston -m pip install --no-cache-dir --upgrade --force-reinstall scons \
-    #&& export PYSTON_SCONS=$(/local/bin/pyston -m pip show scons | grep Location | awk '{print $2}')/scons \
-    #&& /local/bin/pyston -m pip show scons | grep Location | awk '{print $2}' | xargs -I {} ln -s {}/scons /local/bin/pyston-scons \
     && export PYSTON_SCONS=/usr/local/bin/scons \
     && ln -s $PYSTON_SCONS /usr/local/bin/pyston-scons
+
+# TODO: swap RUN curl with ADD
 
 # Pass build options
 COPY custom.py godot/custom.py
@@ -141,7 +132,8 @@ RUN mkdir --parents ~/.local/share/godot/templates/${GODOT_VERSION}.stable \
     && mv bin/* ~/.local/share/godot/templates/${GODOT_VERSION}.stable/
 
 # Multi-stage build
-FROM registry.gitlab.steamos.cloud/steamrt/sniper/platform:latest
+#FROM registry.gitlab.steamos.cloud/steamrt/sniper/platform:latest # DEBUG: Running out of space on GitHub Actions runner
+FROM registry.gitlab.steamos.cloud/steamrt/sniper/sdk:latest # DEBUG: Will re-using the same image save space?
 
 ARG GODOT_VERSION
 ENV GODOT_VERSION=${GODOT_VERSION}
@@ -157,9 +149,6 @@ ENV STEAMCMDDIR "${HOMEDIR}/steamcmd"
 RUN useradd -d ${HOMEDIR} -m "${USER}"
 
 WORKDIR ${HOMEDIR}
-
-COPY --from=build /root/.local/share/godot/templates/${GODOT_VERSION}.stable/ ${HOMEDIR}/.local/share/godot/templates/${GODOT_VERSION}.stable/
-# COPY --from=build /usr/local/bin/godot /usr/local/bin/godot
 
 # Insert Steam prompt answers
 RUN echo steam steam/question select "I AGREE" | debconf-set-selections \
@@ -178,3 +167,6 @@ RUN dpkg --add-architecture i386 \
 USER ${USER}
 RUN ${STEAMCMDDIR} +quit
 USER root
+
+COPY --from=build /root/.local/share/godot/templates/${GODOT_VERSION}.stable/ ${HOMEDIR}/.local/share/godot/templates/${GODOT_VERSION}.stable/
+# COPY --from=build /usr/local/bin/godot /usr/local/bin/godot
