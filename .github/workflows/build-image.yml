@@ -6,22 +6,16 @@ on:
       - "main"
     paths:
       - "**Dockerfile"
-  # pull_request_target:
-  #   branches: 
-  #     - "main"
-  #   types:
-  #     - closed
-  #   #   - opened
-  #   #   - synchronize
-  #   #   - reopened
-  #   paths:
-  #     - "**Dockerfile"
-  pull_request:
+  pull_request_target:
     branches: 
       - "main"
     types:
       - ready_for_review
       - review_requested
+    #   - closed
+    #   - opened
+    #   - synchronize
+    #   - reopened
     paths:
       - "**Dockerfile"
   workflow_dispatch:
@@ -44,7 +38,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       with:
         ref: ${{ github.ref }}
 
@@ -75,6 +69,16 @@ jobs:
         fi
         echo "STEAMWORKS_VERSION=$STEAMWORKS_VERSION" >> $GITHUB_ENV
         echo "steamworks_version=$STEAMWORKS_VERSION" >> $GITHUB_OUTPUT
+
+    - name: Checkout Steamworks SDK
+      uses: actions/checkout@v4
+      with:
+        repository: ${{ secrets.STEAMWORKS_SDK_REPO }}
+        path: sdk
+        ref: ${{ steps.versions.outputs.steamworks_version }}
+        sparse-checkout: |
+          redistributable_bin
+          public
 
     - name: Set up Docker Buildx
       if: ${{ github.event.inputs.dry_run != 'true' }}
