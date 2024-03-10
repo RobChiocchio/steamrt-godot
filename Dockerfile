@@ -116,9 +116,9 @@ RUN pyston-scons -j$(nproc) platform=windows target=editor tools=yes arch=x86_64
 
 # Copy Godot template to user's templates folder
 RUN mkdir --parents ~/.local/share/godot/templates/${GODOT_VERSION}.stable \
-    && mv bin/godot.linuxbsd.template_release.x86_64 ~/.local/share/godot/templates/${GODOT_VERSION}.stable/linux_release.x86_64 \
-    && mv bin/godot.linuxbsd.template_debug.x86_64 ~/.local/share/godot/templates/${GODOT_VERSION}.stable/linux_debug.x86_64 \
-    && mv bin/godot.linuxbsd.editor.x86_64 ~/.local/share/godot/templates/${GODOT_VERSION}.stable/linux_editor.x86_64 \
+    && mv bin/godot.linuxbsd.template_release.x86_64.llvm ~/.local/share/godot/templates/${GODOT_VERSION}.stable/linux_release.x86_64 \
+    && mv bin/godot.linuxbsd.template_debug.x86_64.llvm ~/.local/share/godot/templates/${GODOT_VERSION}.stable/linux_debug.x86_64 \
+    && mv bin/godot.linuxbsd.editor.x86_64.llvm ~/.local/share/godot/templates/${GODOT_VERSION}.stable/linux_editor.x86_64 \
     # && mv bin/godot.linuxbsd.editor.x86_64 /usr/local/bin/godot \
     && mv bin/godot.windows.template_release.x86_64.exe ~/.local/share/godot/templates/${GODOT_VERSION}.stable/windows_release_x86_64.exe \
     && mv bin/godot.windows.template_release.x86_64.console.exe ~/.local/share/godot/templates/${GODOT_VERSION}.stable/windows_release_x86_64_console.exe \
