@@ -122,8 +122,12 @@ jobs:
         tags: ${{ steps.meta.outputs.tags }}
         labels: ${{ steps.meta.outputs.labels }}
         push: true
-        cache-from: type=gha
-        cache-to: type=gha,mode=max,ignore-error=true
+        cache-from: |
+          type=gha
+          type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/steamrt-godot:buildcache
+        cache-to: |
+          type=gha,mode=max,ignore-error=true
+          type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/steamrt-godot:buildcache,mode=max,ignore-error=true
         build-args: |
           STEAMWORKS_COOKIE=${{ secrets.STEAMWORKS_COOKIE }}
           GODOT_VERSION=${{ steps.versions.outputs.godot_version }}
