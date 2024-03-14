@@ -87,7 +87,7 @@ COPY custom.py godot/custom.py
 #    && rm steamworks_sdk_${STEAMWORKS_VERSION}.zip \
 #    && mv sdk/* godot/modules/godotsteam/sdk/
 
-COPY --exclude=.git* sdk/ godot/modules/godotsteam/sdk/
+COPY sdk/ godot/modules/godotsteam/sdk/
 
 WORKDIR /godot
 

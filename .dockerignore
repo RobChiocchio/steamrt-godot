@@ -15,3 +15,9 @@ Dockerfile
 
 # VSCode
 .vscode
+
+# Steamworks SDK
+sdk/.git
+sdk/.git*
+sdk/*.md
+sdk/steamworksexample
