@@ -143,9 +143,9 @@ RUN mv bin/godot.windows.template_release.x86_64.exe ~/.local/share/godot/templa
     && mv bin/godot.windows.editor.x86_64.console.exe ~/.local/share/godot/templates/${GODOT_VERSION}.stable/windows_editor_x86_64_console.exe
 
 # Multi-stage build
-#FROM registry.gitlab.steamos.cloud/steamrt/sniper/platform:latest 
+FROM registry.gitlab.steamos.cloud/steamrt/sniper/platform:latest 
 # DEBUG: Running out of space on GitHub Actions runner
-FROM registry.gitlab.steamos.cloud/steamrt/sniper/sdk:latest
+#FROM registry.gitlab.steamos.cloud/steamrt/sniper/sdk:latest
 
 ARG GODOT_VERSION
 ENV GODOT_VERSION=${GODOT_VERSION}
