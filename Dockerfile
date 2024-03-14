@@ -20,7 +20,7 @@ ARG PCK_ENCRYPTION_KEY
 ENV SCRIPT_AES256_ENCRYPTION_KEY=${PCK_ENCRYPTION_KEY}
 
 ARG DEBIAN_FRONTEND=noninteractive
-ARG BUILD_FLAGS="use_llvm=yes linker=mold use_lto=auto"
+ARG BUILD_FLAGS="use_llvm=no linker=mold use_lto=auto"
                 #builtin_libogg=no builtin_libtheora=no builtin_libvorbis=no builtin_libwebp=no
                 #builtin_pcre2=no builtin_freetype=no builtin_libpng=no builtin_zlib=no builtin_graphite=no builtin_harfbuzz=no"
 ARG TEMPLATE_BUILD_FLAGS="disable_3d=yes"
