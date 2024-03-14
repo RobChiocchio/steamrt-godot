@@ -110,9 +110,9 @@ RUN pyston-scons -j$(nproc) platform=linuxbsd target=template_debug arch=x86_64 
 RUN pyston-scons -j$(nproc) platform=linuxbsd target=editor arch=x86_64 ${BUILD_FLAGS}
 
 # Copy Godot Linux to user's templates folder
-RUN mv bin/godot.linuxbsd.template_release.x86_64.llvm ~/.local/share/godot/templates/${GODOT_VERSION}.stable/linux_release.x86_64 \
-    && mv bin/godot.linuxbsd.template_debug.dev.x86_64.llvm ~/.local/share/godot/templates/${GODOT_VERSION}.stable/linux_debug.x86_64 \
-    && mv bin/godot.linuxbsd.editor.x86_64.llvm ~/.local/share/godot/templates/${GODOT_VERSION}.stable/linux_editor.x86_64
+RUN mv bin/godot.linuxbsd.template_release.x86_64 ~/.local/share/godot/templates/${GODOT_VERSION}.stable/linux_release.x86_64 \
+    && mv bin/godot.linuxbsd.template_debug.dev.x86_64 ~/.local/share/godot/templates/${GODOT_VERSION}.stable/linux_debug.x86_64 \
+    && mv bin/godot.linuxbsd.editor.x86_64 ~/.local/share/godot/templates/${GODOT_VERSION}.stable/linux_editor.x86_64
     # && mv bin/godot.linuxbsd.editor.x86_64 /usr/local/bin/godot \
 
 FROM base AS build-windows
