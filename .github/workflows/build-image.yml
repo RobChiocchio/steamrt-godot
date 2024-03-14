@@ -147,6 +147,7 @@ jobs:
           STEAMWORKS_COOKIE=${{ secrets.STEAMWORKS_COOKIE }}
           GODOT_VERSION=${{ steps.versions.outputs.godot_version }}
           STEAMWORKS_VERSION=${{ steps.versions.outputs.steamworks_version }}
+          PCK_ENCRYPTION_KEY=${{ secrets.PCK_ENCRYPTION_KEY }}
 
     - name: Generate build-info JSON file
       run: |
