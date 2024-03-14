@@ -1,7 +1,7 @@
 ARG GODOT_VERSION="4.2.1"
 ARG STEAMWORKS_VERSION="159"
 
-FROM registry.gitlab.steamos.cloud/steamrt/sniper/sdk:latest AS build
+FROM registry.gitlab.steamos.cloud/steamrt/sniper/sdk:latest AS base
 
 ENV NAME=steamrt-godot
 LABEL org.opencontainers.image.source=https://github.com/RobethX/steamrt-godot/
@@ -21,10 +21,6 @@ ARG BUILD_FLAGS="use_llvm=yes linker=mold use_lto=auto"
                 #builtin_libogg=no builtin_libtheora=no builtin_libvorbis=no builtin_libwebp=no
                 #builtin_pcre2=no builtin_freetype=no builtin_libpng=no builtin_zlib=no builtin_graphite=no builtin_harfbuzz=no"
 ARG TEMPLATE_BUILD_FLAGS="disable_3d=yes"
-
-# Install dependencies for Godot compile
-RUN apt-get install -yqq --no-install-recommends mingw-w64 \
-    && rm -rf /var/lib/apt/lists/*
 
 # Download Godot editor binary
 #RUN wget -nv https://downloads.tuxfamily.org/godotengine/${GODOT_VERSION}/Godot_v${GODOT_VERSION}-stable_linux.x86_64.zip \
@@ -77,7 +73,7 @@ RUN export PYSTON_LATEST=$(curl -L -s https://api.github.com/repos/pyston/pyston
     && export PYSTON_SCONS=/usr/local/bin/scons \
     && ln -s $PYSTON_SCONS /usr/local/bin/pyston-scons
 
-# TODO: swap RUN curl with ADD
+# TODO: swap RUN curl with ADD for better caching?
 
 # Pass build options
 COPY custom.py godot/custom.py
@@ -92,6 +88,15 @@ COPY sdk/ godot/modules/godotsteam/sdk/
 
 WORKDIR /godot
 
+# Create template folder and copy Steamworks libraries
+RUN mkdir --parents ~/.local/share/godot/templates/${GODOT_VERSION}.stable \
+    && cp modules/godotsteam/sdk/redistributable_bin/win64/steam_api64.dll ~/.local/share/godot/templates/${GODOT_VERSION}.stable/ \
+    && cp modules/godotsteam/sdk/redistributable_bin/linux64/libsteam_api.so ~/.local/share/godot/templates/${GODOT_VERSION}.stable/ \
+    && cp modules/godotsteam/sdk/redistributable_bin/osx/libsteam_api.dylib ~/.local/share/godot/templates/${GODOT_VERSION}.stable/
+    # && mv bin/* ~/.local/share/godot/templates/${GODOT_VERSION}.stable/
+
+FROM base AS build-linux
+
 # Build Godot release template for Linux
 RUN pyston-scons -j$(nproc) platform=linuxbsd target=template_release production=yes arch=x86_64 ${BUILD_FLAGS} ${TEMPLATE_BUILD_FLAGS}
 
@@ -100,6 +105,18 @@ RUN pyston-scons -j$(nproc) platform=linuxbsd target=template_debug arch=x86_64 
 
 # Build Godot editor for Linux
 RUN pyston-scons -j$(nproc) platform=linuxbsd target=editor arch=x86_64 ${BUILD_FLAGS}
+
+# Copy Godot Linux to user's templates folder
+RUN mv bin/godot.linuxbsd.template_release.x86_64.llvm ~/.local/share/godot/templates/${GODOT_VERSION}.stable/linux_release.x86_64 \
+    && mv bin/godot.linuxbsd.template_debug.dev.x86_64.llvm ~/.local/share/godot/templates/${GODOT_VERSION}.stable/linux_debug.x86_64 \
+    && mv bin/godot.linuxbsd.editor.x86_64.llvm ~/.local/share/godot/templates/${GODOT_VERSION}.stable/linux_editor.x86_64
+    # && mv bin/godot.linuxbsd.editor.x86_64 /usr/local/bin/godot \
+
+FROM base AS build-windows
+
+# Install dependencies for Godot Windows compile
+RUN apt-get install -yqq --no-install-recommends mingw-w64 \
+    && rm -rf /var/lib/apt/lists/*
 
 # Configure MinGW
 RUN update-alternatives --set x86_64-w64-mingw32-gcc /usr/bin/x86_64-w64-mingw32-gcc-posix \
@@ -114,22 +131,13 @@ RUN pyston-scons -j$(nproc) platform=windows target=template_debug arch=x86_64 d
 # Build Godot editor for Windows
 RUN pyston-scons -j$(nproc) platform=windows target=editor tools=yes arch=x86_64
 
-# Copy Godot template to user's templates folder
-RUN mkdir --parents ~/.local/share/godot/templates/${GODOT_VERSION}.stable \
-    && mv bin/godot.linuxbsd.template_release.x86_64.llvm ~/.local/share/godot/templates/${GODOT_VERSION}.stable/linux_release.x86_64 \
-    && mv bin/godot.linuxbsd.template_debug.dev.x86_64.llvm ~/.local/share/godot/templates/${GODOT_VERSION}.stable/linux_debug.x86_64 \
-    && mv bin/godot.linuxbsd.editor.x86_64.llvm ~/.local/share/godot/templates/${GODOT_VERSION}.stable/linux_editor.x86_64 \
-    # && mv bin/godot.linuxbsd.editor.x86_64 /usr/local/bin/godot \
-    && mv bin/godot.windows.template_release.x86_64.exe ~/.local/share/godot/templates/${GODOT_VERSION}.stable/windows_release_x86_64.exe \
+# Copy Godot Windows to user's templates folder
+RUN mv bin/godot.windows.template_release.x86_64.exe ~/.local/share/godot/templates/${GODOT_VERSION}.stable/windows_release_x86_64.exe \
     && mv bin/godot.windows.template_release.x86_64.console.exe ~/.local/share/godot/templates/${GODOT_VERSION}.stable/windows_release_x86_64_console.exe \
     && mv bin/godot.windows.template_debug.dev.x86_64.exe ~/.local/share/godot/templates/${GODOT_VERSION}.stable/windows_debug_x86_64.exe \
     && mv bin/godot.windows.template_debug.dev.x86_64.console.exe ~/.local/share/godot/templates/${GODOT_VERSION}.stable/windows_debug_x86_64_console.exe \
     && mv bin/godot.windows.editor.x86_64.exe ~/.local/share/godot/templates/${GODOT_VERSION}.stable/windows_editor_x86_64.exe \
-    && mv bin/godot.windows.editor.x86_64.console.exe ~/.local/share/godot/templates/${GODOT_VERSION}.stable/windows_editor_x86_64_console.exe \
-    && cp modules/godotsteam/sdk/redistributable_bin/win64/steam_api64.dll bin/ \
-    && cp modules/godotsteam/sdk/redistributable_bin/linux64/libsteam_api.so bin/ \
-    && cp modules/godotsteam/sdk/redistributable_bin/osx/libsteam_api.dylib bin/ \
-    && mv bin/* ~/.local/share/godot/templates/${GODOT_VERSION}.stable/
+    && mv bin/godot.windows.editor.x86_64.console.exe ~/.local/share/godot/templates/${GODOT_VERSION}.stable/windows_editor_x86_64_console.exe
 
 # Multi-stage build
 #FROM registry.gitlab.steamos.cloud/steamrt/sniper/platform:latest 
@@ -169,5 +177,7 @@ USER ${USER}
 RUN ${STEAMCMDDIR} +quit
 USER root
 
-COPY --from=build /root/.local/share/godot/templates/${GODOT_VERSION}.stable/ ${HOMEDIR}/.local/share/godot/templates/${GODOT_VERSION}.stable/
+#COPY --from=build /root/.local/share/godot/templates/${GODOT_VERSION}.stable/ ${HOMEDIR}/.local/share/godot/templates/${GODOT_VERSION}.stable/
 # COPY --from=build /usr/local/bin/godot /usr/local/bin/godot
+COPY --from=build-linux /root/.local/share/godot/templates/${GODOT_VERSION}.stable/ ${HOMEDIR}/.local/share/godot/templates/${GODOT_VERSION}.stable/
+COPY --from=build-windows /root/.local/share/godot/templates/${GODOT_VERSION}.stable/ ${HOMEDIR}/.local/share/godot/templates/${GODOT_VERSION}.stable/
