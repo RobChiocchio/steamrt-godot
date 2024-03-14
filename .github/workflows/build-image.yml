@@ -108,6 +108,7 @@ jobs:
         path: sdk
         ref: ${{ steps.versions.outputs.steamworks_version }}
         token: ${{ secrets.ACCESS_TOKEN }}
+        clean: false
         sparse-checkout: |
           redistributable_bin
           public
