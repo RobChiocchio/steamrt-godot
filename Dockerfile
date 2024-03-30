@@ -4,7 +4,7 @@ ARG STEAMWORKS_VERSION="159"
 FROM registry.gitlab.steamos.cloud/steamrt/sniper/sdk:latest AS base
 
 ENV NAME=steamrt-godot
-LABEL org.opencontainers.image.source=https://github.com/RobethX/steamrt-godot/
+LABEL org.opencontainers.image.source=https://github.com/RobChiocchio/steamrt-godot/
 
 # Pass Steamworks login cookie from GitHub secrets
 ARG STEAMWORKS_COOKIE
